@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Game của An 🐟</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: linear-gradient(180deg, #aee9ff 0%, #d8f6ff 35%, #ffe9f3 75%, #fff3d6 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 18px 40px;
+    color: #274b63;
+  }
+  h1 { font-size: 34px; text-align: center; line-height: 1.2; }
+  h1 span { font-size: 40px; }
+  .sub { margin-top: 6px; font-size: 15px; color: #5b7d94; text-align: center; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 340px));
+    gap: 22px;
+    margin-top: 30px;
+    width: 100%;
+    max-width: 760px;
+    justify-content: center;
+  }
+  .card {
+    background: rgba(255,255,255,.88);
+    border-radius: 26px;
+    padding: 24px 22px 20px;
+    box-shadow: 0 10px 30px rgba(39,75,99,.16);
+    text-align: center;
+    border: 3px solid #fff;
+  }
+  .emoji { font-size: 58px; line-height: 1; }
+  .card h2 { font-size: 24px; margin: 10px 0 6px; }
+  .card p { font-size: 14.5px; line-height: 1.55; color: #4d6f86; min-height: 44px; }
+  .badge {
+    display: inline-block;
+    margin-top: 8px;
+    background: #ffe08a;
+    color: #7a5b00;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+  .btn {
+    display: block;
+    margin-top: 14px;
+    padding: 14px 18px;
+    border-radius: 999px;
+    font-size: 17px;
+    font-weight: 800;
+    text-decoration: none;
+    color: #fff;
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    box-shadow: 0 6px 16px rgba(37,99,235,.35);
+  }
+  .btn:active { transform: scale(.97); }
+  .btn.pink { background: linear-gradient(135deg, #fb7185, #e11d48); box-shadow: 0 6px 16px rgba(225,29,72,.35); }
+  .old { display: inline-block; margin-top: 12px; font-size: 13px; color: #7a93a8; text-decoration: underline; }
+  .foot { margin-top: 34px; font-size: 13px; color: #7a93a8; text-align: center; }
+</style>
+</head>
+<body>
+  <h1><span>🐟</span><br>Game của An</h1>
+  <div class="sub">Bấm vô là chơi liền, khỏi cài gì hết 💙</div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="emoji">🐠</div>
+      <h2>Flappy Fish</h2>
+      <p>Bé cá bay né cột chai nhựa, nhặt vỏ sò đổi skin, thử thách mỗi ngày, có cả chế độ đêm.</p>
+      <div class="badge">✨ Bản mới v2</div>
+      <a class="btn" href="https://miatrann97-source.github.io/flappy-fish/flappy-fish-preview-v2.html">▶ Chơi bản mới</a>
+      <a class="old" href="https://miatrann97-source.github.io/flappy-fish/flappy-fish.html">Chơi bản cũ</a>
+    </div>
+
+    <div class="card">
+      <div class="emoji">🍬</div>
+      <h2>Animal Crush</h2>
+      <p>Xếp 3 con giống nhau để qua màn, 50 màn, truyện Cá Con Phiêu Lưu Ký, có đại bàng bom nổ cả bàn.</p>
+      <div class="badge">✨ Bản mới v32.33</div>
+      <a class="btn pink" href="https://miatrann97-source.github.io/animal-crush/animal-crush-preview-v32-33.html">▶ Chơi bản mới</a>
+      <a class="old" href="https://miatrann97-source.github.io/animal-crush/">Chơi bản cũ</a>
+    </div>
+  </div>
+
+  <div class="foot">Hai bản mới đang chờ An duyệt nhen 💙<br>Made with 💙 by Mia &amp; Bom</div>
+</body>
+</html>
