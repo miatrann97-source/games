@@ -1320,14 +1320,25 @@ function windowBox(w,h,d,x,y,z,parent){
    sheet, blob shadow under the feet.
    ART IS SWAPPABLE BY FILE PATH: see SPRITE_DEFS below — to change the
    art, replace the PNG files (same names) or point the paths at new ones.
-   Current PNGs are STAND-INS (Flow 3D walk sheets, NOT hand-drawn yet). */
+   Current PNGs are STAND-INS (Flow 3D walk sheets, NOT hand-drawn yet) —
+   EXCEPT beca walk-front (hand-drawn) and the npc-banoi / npc-hocsinh
+   stills (hand-drawn single frames). */
 var SPRITE_DEFS={
   beca:{ front:'sprites/beca-walk-front.png', back:'sprites/beca-walk-back.png',
          runBack:'sprites/beca-run-back.png', still:'sprites/beca-still.png',
          frames:12, runFrames:8, fps:15, height:1.6 },
   npc:{ front:'sprites/beca-walk-front.png', back:'sprites/beca-walk-back.png',
         runBack:'sprites/beca-run-back.png', still:'sprites/beca-still.png',
-        frames:12, runFrames:8, fps:15, height:1.6 }
+        frames:12, runFrames:8, fps:15, height:1.6 },
+  /* hand-drawn NPC stills (single 512x512 frame, frames:1 — no walk cycle;
+     the driver keeps frame 0 and bobs gently while moving). Same 470px-tall /
+     feet-at-y=498 convention as the bé cá sheets. */
+  npcBanoi:{ front:'sprites/npc-banoi.png', back:'sprites/npc-banoi.png',
+        runBack:'sprites/npc-banoi.png', still:'sprites/npc-banoi.png',
+        frames:1, runFrames:1, fps:15, height:1.55 },
+  npcHocsinh:{ front:'sprites/npc-hocsinh.png', back:'sprites/npc-hocsinh.png',
+        runBack:'sprites/npc-hocsinh.png', still:'sprites/npc-hocsinh.png',
+        frames:1, runFrames:1, fps:15, height:1.4 }
 };
 var _sheetCache={};
 function loadSheet(url, frames){
@@ -1393,14 +1404,17 @@ function buildBeca(){
   playerParts=ch;
   return ch.group;
 }
-/* ---------------- NPC (hand-drawn sprite; stand-in = bé cá sheet, tinted + varied height) ---------------- */
-function buildCustomer(def){
+/* ---------------- NPC (hand-drawn sprite; stand-in = bé cá sheet, tinted + varied height) ----------------
+   art = optional hand-drawn still def (SPRITE_DEFS.npcBanoi / npcHocsinh):
+   single frame, NO tint (keep the drawn colours true), fixed height. */
+function buildCustomer(def, art){
+  var sd=art||SPRITE_DEFS.npc;
   var tints=[0xffe2e2,0xd9e8ff,0xe8ffd9,0xfff2cc,0xe8d9ff,0xffe8f0];
-  var tint=tints[Math.floor(Math.random()*tints.length)];
-  var h=1.5+Math.random()*0.2;
-  var ch=makeSpriteChar({front:SPRITE_DEFS.npc.front, back:SPRITE_DEFS.npc.back,
-    runBack:SPRITE_DEFS.npc.runBack, frames:SPRITE_DEFS.npc.frames,
-    runFrames:SPRITE_DEFS.npc.runFrames, height:h, tint:tint});
+  var tint=art?0xffffff:tints[Math.floor(Math.random()*tints.length)];
+  var h=art?sd.height:(1.5+Math.random()*0.2);
+  var ch=makeSpriteChar({front:sd.front, back:sd.back,
+    runBack:sd.runBack, frames:sd.frames,
+    runFrames:sd.runFrames, height:h, tint:tint});
   var g=ch.group;
   g.userData={sprite:ch};
   return g;
@@ -1588,7 +1602,11 @@ function spawnCustomer(force){
   else if(r<0.42){ sukiId='bemai'; special=SUKI_DEFS[3]; }
   var isStudent = G.events.studentsActive;
   var outfit=isStudent?STUDENT_OUTFIT:choice(CUST_OUTFITS);
-  var mesh=buildCustomer(outfit);
+  // hand-drawn stills: Bà Nội + school kids (Bé Mai + student rush)
+  var art=null;
+  if(sukiId==='banoi') art=SPRITE_DEFS.npcBanoi;
+  else if(isStudent||sukiId==='bemai') art=SPRITE_DEFS.npcHocsinh;
+  var mesh=buildCustomer(outfit, art);
   var startX=spot.x+rand(-2,2), startZ=spot.z+rand(-2,2);
   mesh.position.set(startX,0,startZ);
   scene.add(mesh);
