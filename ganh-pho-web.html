@@ -44,9 +44,6 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#35a7ff;font
 #top-right .btn{font-size:14px;padding:6px 10px;background:rgba(15,18,28,.88);color:#fff;border-color:rgba(255,255,255,.3)}
 #shout-wrap{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px}
 #btn-shout{font-size:21px;padding:12px 26px;border-radius:999px;min-width:210px;background:linear-gradient(#ffb703,#ff8c1a);color:#5a3418;border:3px solid #222}
-#tool-slots{display:flex;gap:8px;justify-content:center}
-.tool-slot{background:rgba(15,18,28,.88);border:3px solid rgba(255,255,255,.3);border-radius:14px;color:#fff;font-weight:800;padding:5px 12px;text-align:center;font-size:15px;box-shadow:0 3px 0 rgba(0,0,0,.35)}
-.tool-slot span{display:block;font-size:11px;color:#ffb703;letter-spacing:1px}
 #btn-serve{font-size:22px;padding:13px 30px;border-radius:20px;min-width:230px}
 #ctx-btns{position:absolute;bottom:170px;left:50%;transform:translateX(-50%);display:flex;gap:10px}
 #banner{position:absolute;top:104px;left:50%;transform:translateX(-50%);background:#ff5d8f;color:#fff;border:3px solid #222;border-radius:14px;padding:8px 18px;font-weight:800;font-size:18px;box-shadow:0 4px 0 rgba(0,0,0,.25);text-align:center}
@@ -66,6 +63,10 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#35a7ff;font
 body.pov #pov-ganh{display:block}
 body.pov #btn-cam{display:none} /* near/far distance means nothing in first person */
 #hint-move{position:absolute;top:72px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:#fff;text-shadow:0 2px 2px rgba(0,0,0,.5);white-space:nowrap}
+#tracker-clock{display:none}
+#btn-menu{display:none}
+#menu-panel{display:none}
+body.pov #cam-btns{display:none} /* POV: drag-to-look is the control; the arrow buttons return in 3rd person */
 /* customer bubbles (projected) */
 #bubble-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .bubble{position:absolute;transform:translate(-50%,-100%);background:#fff;border:3px solid #222;border-radius:14px;padding:5px 9px;font-weight:800;font-size:14px;white-space:nowrap;box-shadow:0 3px 0 rgba(0,0,0,.25)}
@@ -79,7 +80,7 @@ body.pov #btn-cam{display:none} /* near/far distance means nothing in first pers
 /* ---------- overlays ---------- */
 .overlay{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:rgba(20,30,60,.45);padding:12px}
 /* hide the bottom HUD cluster while any overlay is open (it would show through under the serve card) */
-body.ov-open #btn-serve,body.ov-open #shout-wrap,body.ov-open #hint-move,body.ov-open #joystick,body.ov-open #ctx-btns,body.ov-open #cam-btns,body.ov-open #pov-ganh{display:none !important}
+body.ov-open #btn-serve,body.ov-open #shout-wrap,body.ov-open #hint-move,body.ov-open #joystick,body.ov-open #ctx-btns,body.ov-open #cam-btns,body.ov-open #pov-ganh,body.ov-open #menu-panel{display:none !important}
 .ov-card{width:min(560px,96vw);max-height:92vh;overflow-y:auto;padding:18px 20px}
 .ov-card h2{margin:0 0 6px;font-size:26px;text-align:center}
 .ov-card h3{margin:10px 0 4px;font-size:18px}
@@ -142,6 +143,7 @@ input[type=text]{font-family:inherit;font-size:17px;font-weight:700;border:3px s
 .so-item{display:flex;justify-content:space-between;align-items:center;gap:6px}
 .so-item .ck{color:#4ecb4e;font-weight:800}
 .so-item.done{opacity:.75}
+.so-ladle{margin-top:8px;font-size:14px;font-weight:800;color:#ffd23f}
 .serve-center{flex:1;min-width:300px;display:flex;align-items:center;justify-content:center;gap:14px;position:relative}
 .serve-bowl{position:relative;width:290px;height:290px;display:flex;align-items:center;justify-content:center}
 .serve-bowl img{width:280px;height:280px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.45))}
@@ -192,32 +194,37 @@ input[type=text]{font-family:inherit;font-size:17px;font-weight:700;border:3px s
   .serve-order{width:100%}
   .serve-big{min-width:260px;font-size:20px !important}
   .sakto{display:none}
-  /* portrait HUD at 390px: top row fits, bottom cluster never overlaps */
-  #tracker{left:8px;right:106px;transform:none;min-width:0;font-size:13px;padding:4px 10px;white-space:nowrap;overflow:hidden;line-height:1.15}
+  /* portrait HUD at 390px: simplified — slim top bar, one ☰ menu, clear joystick zone */
+  #tracker{left:auto;right:8px;transform:none;min-width:0;max-width:150px;font-size:14px;padding:5px 10px;white-space:nowrap;overflow:hidden;text-align:right;line-height:1.2}
   #tracker .arrow{font-size:18px}
-  #tracker .obj{font-size:11px;white-space:nowrap}
-  #clockbox{top:8px;right:8px;font-size:14px;padding:5px 10px}
-  #clockbox .day{font-size:11px}
-  #top-right{top:70px;right:8px}
-  #top-right .btn{min-width:44px;min-height:44px;font-size:15px;padding:8px 10px}
-  #moneybox{bottom:170px;left:16px;font-size:16px;padding:5px 10px}
+  #tracker .obj{display:none}
+  #tracker-clock{display:block;font-size:11px;color:#ccc;font-weight:700}
+  #clockbox{display:none}
+  #moneybox{top:8px;bottom:auto;left:8px;max-width:208px;font-size:16px;padding:5px 54px 5px 10px;white-space:nowrap;overflow:hidden}
+  #moneybox .plus-btn{position:absolute;right:4px;top:50%;transform:translateY(-50%);margin-left:0}
   #moneybox .sub{font-size:11px}
-  #chips{bottom:248px;left:16px}
-  #side-left .btn{width:92px;font-size:12px;padding:11px 2px}
-  #side-right .btn{width:92px;font-size:12px;padding:11px 2px}
-  #side-left,#side-right{gap:6px}
-  #ctx-btns{bottom:136px;right:12px;left:auto;transform:none}
-  #ctx-btns .btn{font-size:15px;padding:10px 14px;min-height:44px}
-  #cam-btns{bottom:196px}
-  #pov-ganh{width:min(220px,56vw);bottom:0} /* portrait: pole along the very bottom edge, pot + basket peek out beside the PHỞƠƠ! button */
+  #top-right{top:72px;right:8px}
+  #top-right .btn{min-width:44px;min-height:44px;font-size:14px;padding:8px 9px}
+  #btn-menu{display:flex;position:absolute;top:72px;left:8px;width:48px;height:48px;align-items:center;justify-content:center;font-size:22px;padding:0;background:rgba(15,18,28,.88);color:#fff;border-color:rgba(255,255,255,.3)}
+  #menu-panel{position:absolute;top:126px;left:8px;width:212px;display:flex;flex-direction:column;gap:6px;background:#fff;border:4px solid #222;border-radius:16px;box-shadow:0 6px 0 rgba(0,0,0,.25);padding:10px;z-index:8;pointer-events:auto}
+  #menu-panel.hidden{display:none !important}
+  #menu-panel .menu-item{width:100%;font-size:15px;padding:11px 8px;text-align:left;min-height:44px;background:rgba(15,18,28,.92);color:#fff;border-color:rgba(255,255,255,.3)}
+  #side-left,#side-right{display:none}
+  #chips{top:126px;left:8px;right:8px;bottom:auto;display:flex;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:6px}
+  #banner{top:126px;left:50%;transform:translateX(-50%);right:auto;width:max-content;max-width:92vw;font-size:15px;padding:7px 14px}
+  #special-card{top:210px;left:8px;max-width:180px;font-size:13px}
+  #ctx-btns{bottom:140px;right:12px;left:auto;transform:none;flex-wrap:wrap;justify-content:flex-end;max-width:188px}
+  #ctx-btns .btn{font-size:14px;padding:10px 12px;min-height:44px}
+  #cam-btns{left:12px;right:auto;bottom:230px}
+  #pov-ganh{width:160px;bottom:80px;left:auto;right:8px;transform:none}
   #shout-wrap{bottom:16px;right:12px;left:auto;transform:none;align-items:flex-end}
-  #btn-shout{font-size:19px;min-width:170px;padding:12px 20px}
-  #btn-serve{min-width:200px;font-size:19px;padding:11px 18px}
+  #btn-shout{font-size:18px;min-width:170px;padding:12px 16px}
+  #btn-serve{min-width:180px;font-size:18px;padding:11px 14px}
   #toasts{bottom:320px}
-  #banner{top:155px;left:110px;right:8px;transform:none;max-width:none;font-size:16px;padding:7px 14px}
-  #hint-move{top:118px}
+  #hint-move{top:172px;font-size:11px;max-width:94vw;white-space:normal;text-align:center;transition:opacity .6s}
+  .bubble{font-size:12px;padding:4px 7px;max-width:180px;white-space:normal}
+  .bubble .ord{font-size:13px}
   .ov-card h2{font-size:22px}
-  #hint-move{font-size:11px;max-width:94vw;white-space:normal;text-align:center}
   .serve-tabs .tab{padding:12px 16px}
 }
 @media (max-height:500px) and (orientation:landscape){
@@ -241,12 +248,24 @@ input[type=text]{font-family:inherit;font-size:17px;font-weight:700;border:3px s
   <div id="hud">
     <div id="moneybox">💰 <span id="money">50.000đ</span><button class="plus-btn" id="btn-money-plus" title="Mua nguyên liệu">＋</button><div class="sub"><span id="carried-line">🥣 Mang: 0/16 tô</span> · <span id="fridge-line">🧊 Tủ: 0/50</span></div></div>
     <div id="chips"></div>
-    <div id="tracker"><span id="tracker-text">🔍 Đang tìm khách đói…</span><div class="obj" id="tracker-obj">🎯 Phục vụ 5 nhóm đói: 0/5 (+50%)</div></div>
+    <div id="tracker"><span id="tracker-text">🔍 Đang tìm khách đói…</span><div class="obj" id="tracker-obj">🎯 Phục vụ 5 nhóm đói: 0/5 (+50%)</div><div class="sub" id="tracker-clock"></div></div>
     <div id="clockbox"><span id="clock">7:00 SA</span><div class="day" id="dayline">Ngày 1 · Trời sáng</div></div>
     <div id="top-right">
       <button class="btn small" id="btn-sound">🔊</button>
       <button class="btn small" id="btn-lang">VI | EN</button>
       <button class="btn small" id="btn-pov" title="Đổi góc nhìn / Switch view">👁️ POV</button>
+    </div>
+    <button class="btn" id="btn-menu" aria-label="Menu">☰</button>
+    <div id="menu-panel" class="hidden">
+      <button class="btn menu-item" data-menu="shop" data-i18n="shop">🛒 CỬA HÀNG</button>
+      <button class="btn menu-item" data-menu="gear" data-i18n="gear">🎒 ĐỒ</button>
+      <button class="btn menu-item" data-menu="book" data-i18n="book">📖 SỔ</button>
+      <button class="btn menu-item" data-menu="kitchen" data-i18n="kitchen">🍳 BẾP</button>
+      <button class="btn menu-item" data-menu="outfits" data-i18n="outfits">👕 TRANG PHỤC</button>
+      <button class="btn menu-item" data-menu="help" data-i18n="help">❓ TRỢ GIÚP</button>
+      <button class="btn menu-item" data-menu="map" data-i18n="map">🗺️ BẢN ĐỒ</button>
+      <button class="btn menu-item" data-menu="goals" data-i18n="goals">🎯 MỤC TIÊU</button>
+      <button class="btn menu-item" data-menu="camview" id="menu-camview">📷 Xa</button>
     </div>
     <div id="special-card" class="hidden"><span class="nm" id="special-name"></span><div id="special-sub"></div></div>
     <div id="side-left">
@@ -277,10 +296,6 @@ input[type=text]{font-family:inherit;font-size:17px;font-weight:700;border:3px s
       <button class="btn blue" id="btn-tele">⚡ DỊCH CHUYỂN</button>
     </div>
     <div id="shout-wrap">
-      <div id="tool-slots">
-        <div class="tool-slot">🥣 <b id="slot-ganh-n">0/16</b><span>GÁNH</span></div>
-        <div class="tool-slot">🥄 <b>MUÔI</b><span id="slot-muoi-n">SẴN</span></div>
-      </div>
       <button class="btn green hidden" id="btn-serve">🍜 PHỤC VỤ</button>
       <button class="btn orange" id="btn-shout">📣 PHỞƠƠ! <span id="shout-count">0/16</span></button>
     </div>
@@ -345,6 +360,7 @@ input[type=text]{font-family:inherit;font-size:17px;font-weight:700;border:3px s
           <div class="so-size" id="pour-size">🍜 M</div>
         </div>
         <div class="so-items" id="pour-items"></div>
+        <div class="so-ladle" id="pour-muoi">🥄 Muôi: SẴN</div>
       </div>
       <div class="serve-center">
         <div class="serve-bowl">
@@ -476,7 +492,7 @@ function toast(msg, ms){
 }
 function banner(msg, ms){
   var b=$('banner'); b.textContent=msg; b.classList.remove('hidden');
-  clearTimeout(banner._t); banner._t=setTimeout(function(){ b.classList.add('hidden'); }, ms||4200);
+  clearTimeout(banner._t); banner._t=setTimeout(function(){ b.classList.add('hidden'); }, ms||5000);
 }
 /* ---------------- i18n ---------------- */
 var LANG = 'vi';
@@ -1816,6 +1832,40 @@ function updateCustomers(dt){
     var o=nearCustomer.order;
     $('btn-serve').textContent=t('serve')+' · '+G.carried+'/'+G.capacity; // TAHO: "Phục vụ · 15/16"
   }
+  layoutBubbles();
+}
+/* ---------------- order bubbles, portrait layout: max 2, stacked, inside a safe band ----------------
+   Bubbles are projected above the customers' heads; on a 390px portrait screen that puts them on top
+   of each other, cut off at the edge, or over the HUD buttons. In portrait only, clamp them into the
+   free middle band (below the top bar, above the bottom cluster) and keep at most the 2 nearest
+   customers' bubbles, stacked with a fixed gap. Desktop keeps head-anchored bubbles. */
+function layoutBubbles(){
+  if(window.innerWidth>700) return;
+  var W=window.innerWidth;
+  var vis=[];
+  G.customers.forEach(function(c){
+    if(c.state==='leave'||!c.bubble||c.bubble.style.display==='none') return;
+    vis.push(c);
+  });
+  vis.sort(function(a,b){ return dist2(playerState.x,playerState.z,a.x,a.z)-dist2(playerState.x,playerState.z,b.x,b.z); });
+  var keep=vis.slice(0,2);
+  G.customers.forEach(function(c){ if(keep.indexOf(c)<0 && c.bubble) c.bubble.style.display='none'; });
+  var yMax=povMode?500:450; // bubble bottom stays above the bottom cluster (POV) / camera buttons (3RD)
+  var placed=[];
+  keep.forEach(function(c){
+    var x=parseFloat(c.bubble.style.left)||W/2;
+    var y=parseFloat(c.bubble.style.top)||200;
+    x=Math.max(95, Math.min(W-95, x));
+    y=Math.max(230, Math.min(yMax, y));
+    for(var i=0;i<placed.length;i++){
+      if(Math.abs(y-placed[i].y)<76 && Math.abs(x-placed[i].x)<190){
+        y=placed[i].y+76;
+        if(y>yMax){ y=placed[i].y-76; if(y<230) y=230; }
+      }
+    }
+    placed.push({x:x, y:y});
+    c.bubble.style.left=x+'px'; c.bubble.style.top=y+'px';
+  });
 }
 /* ---------------- teleport to nearest hungry customer ---------------- */
 var teleReadyAt=0, teleBtnEl=null;
@@ -1840,17 +1890,35 @@ function doTeleport(){
 /* ---------------- HUD ---------------- */
 function updateHUD(){
   $('money').textContent=fmt(G.money);
-  $('carried-line').textContent='🥣 '+(LANG==='vi'?'Mang':'Carrying')+': '+G.carried+'/'+G.capacity+' '+(LANG==='vi'?'tô':'bowls');
-  $('fridge-line').textContent='🧊 '+(LANG==='vi'?'Tủ':'Fridge')+': '+G.fridge+'/'+CFG.fridgeCap;
+  // portrait: short "🥣 16/16 · 🧊 32/50" so the top pill never truncates
+  var compactHUD=window.innerWidth<=700;
+  $('carried-line').textContent='🥣 '+(compactHUD?'':(LANG==='vi'?'Mang':'Carrying')+': ')+G.carried+'/'+G.capacity+(compactHUD?'':(LANG==='vi'?' tô':' bowls'));
+  $('fridge-line').textContent='🧊 '+(compactHUD?'':(LANG==='vi'?'Tủ':'Fridge')+': ')+G.fridge+'/'+CFG.fridgeCap;
+  // portrait: the hint line only shows inside its 5s window and never while the banner is up
+  // (instant hide when the banner appears — no 0.6s fade overlapping it)
+  var hm=$('hint-move');
+  if(hm){
+    if(window.innerWidth<=700){
+      var showH=hintUntil&&performance.now()<hintUntil&&$('banner').classList.contains('hidden');
+      hm.style.transition=showH?'opacity .6s':'none';
+      hm.style.opacity=showH?'1':'0';
+    }
+    else hm.style.opacity='';
+  }
   $('shout-count').textContent=G.carried+'/'+G.capacity;
-  $('slot-ganh-n').textContent=G.carried+'/'+G.capacity;
-  $('slot-muoi-n').textContent=G.carried>0?(LANG==='vi'?'SẴN':'READY'):(LANG==='vi'?'HẾT':'EMPTY');
+  var pm=$('pour-muoi'); if(pm) pm.textContent='🥄 '+(LANG==='vi'?'Muôi':'Ladle')+': '+(G.carried>0?(LANG==='vi'?'SẴN':'READY'):(LANG==='vi'?'HẾT':'EMPTY'));
   $('tracker-obj').textContent='🎯 '+t('objective')+': '+G.objective+'/'+CFG.objectiveTarget+' (+50%)';
   var chips=[];
-  if(G.events.hungryActive) chips.push('😋 '+(LANG==='vi'?'Khu đói':'Hungry')+' '+Math.ceil(G.events.hungryTimer)+'s ×1.2');
+  if(G.events.hungryActive){
+    // portrait: the hungry countdown shows under the top bar and hides after 5s
+    if(!updateHUD._hungerT) updateHUD._hungerT=performance.now();
+    if(performance.now()-updateHUD._hungerT<5000) chips.push('😋 '+(LANG==='vi'?'Khu đói':'Hungry')+' '+Math.ceil(G.events.hungryTimer)+'s ×1.2');
+  } else updateHUD._hungerT=0;
   if(G.perfectStreak>=3) chips.push('🔥 '+(LANG==='vi'?'Chuỗi hoàn hảo':'Perfect streak')+': '+G.perfectStreak);
   if(G.title) chips.push('🏅 '+G.title);
   $('chips').innerHTML=chips.map(function(c){return '<div class="chip">'+c+'</div>';}).join('');
+  // portrait: chips hide while the pink banner is up, so the two never stack
+  if(window.innerWidth<=700) $('chips').style.display=$('banner').classList.contains('hidden')?'':'none';
   // tracker: nearest hungry group
   var best=null, bd=1e9;
   G.customers.forEach(function(c){
@@ -1875,6 +1943,7 @@ function updateHUD(){
   $('clock').textContent=((h24>=6&&h24<18)?'☀️ ':'🌙 ')+h12+':'+(m<10?'0':'')+m+' '+suf;
   var phase = (h24>=6&&h24<11)?t('dawn'):(h24>=11&&h24<17)?t('noon'):(h24>=17&&h24<19)?'🌇':t('night');
   $('dayline').textContent=t('day')+' '+G.day+' · '+phase;
+  var tc=$('tracker-clock'); if(tc) tc.textContent=$('clock').textContent+' · '+t('day')+' '+G.day;
   // 3D guide arrow above bé cá → nearest hungry group (hidden when <8m away)
   if(guideArrow){
     var showArrow = !!(best && bd>=8 && G.started && !anyOverlayOpen() && !povMode);
@@ -1989,8 +2058,9 @@ function updateWorld(dt){
 }
 /* ---------------- overlays helper ---------------- */
 var openOverlayId=null;
-function openOv(id){ tapTarget=null; $(id).classList.remove('hidden'); openOverlayId=id; document.body.classList.add('ov-open'); }
-function closeOv(id){ $(id).classList.add('hidden'); if(openOverlayId===id) openOverlayId=null; if(!openOverlayId) document.body.classList.remove('ov-open'); if(id==='ov-pour'){ window.__freezeCam=false; if(player) player.visible=!povMode; } }
+function closeMenu(){ var m=$('menu-panel'); if(m) m.classList.add('hidden'); }
+function openOv(id){ tapTarget=null; closeMenu(); $(id).classList.remove('hidden'); openOverlayId=id; document.body.classList.add('ov-open'); }
+function closeOv(id){ $(id).classList.add('hidden'); if(openOverlayId===id) openOverlayId=null; if(!openOverlayId) document.body.classList.remove('ov-open'); if(id==='ov-pour'){ window.__freezeCam=false; if(player) player.visible=!povMode; } if(id==='ov-help') showHintTemp(); }
 function closeAllOv(){ document.querySelectorAll('.overlay').forEach(function(o){ o.classList.add('hidden'); }); openOverlayId=null; document.body.classList.remove('ov-open'); }
 document.addEventListener('click', function(e){
   var c=e.target.closest('[data-close]');
@@ -2770,6 +2840,12 @@ function screenToGround(cx,cy){
   var mode=null; // null | 'joy' | 'cam' | 'cam2' | 'mouse'
   var joyId=null, camId=null, lastX=0, lastY=0, lastAvgX=0, lastAvgY=0;
   function showJoy(cx,cy){
+    if(window.innerWidth<=700){
+      // portrait: keep the joystick visual inside the clear bottom-left zone —
+      // never over the money box, the ctx buttons or the gánh pole
+      cx=Math.max(78, Math.min(115, cx));
+      cy=Math.max(window.innerHeight-144, Math.min(window.innerHeight-94, cy));
+    }
     joy.style.left=(cx-JOY_R)+'px'; joy.style.top=(cy-JOY_R)+'px'; joy.style.bottom='auto';
   }
   function setKnob(dx,dy){
@@ -2795,6 +2871,7 @@ function screenToGround(cx,cy){
   area.addEventListener('contextmenu', function(e){ e.preventDefault(); });
   area.addEventListener('pointerdown', function(e){
     if(!G.started || anyOverlayOpen()) return;
+    closeMenu();
     if(e.pointerType==='mouse'){
       if(e.button!==2) return; // right button only on PC
       mode='mouse'; lastX=e.clientX; lastY=e.clientY;
@@ -2895,6 +2972,7 @@ function setCamView(v, saveIt){
   camView=(v==='near')?'near':'far';
   camDist=CAM_VIEWS[camView].dist; camPitch=CAM_VIEWS[camView].pitch; // view preset resets the pitch too
   $('btn-cam').textContent=(camView==='far')?'📷 Xa':'📷 Gần';
+  var mc=$('menu-camview'); if(mc) mc.textContent=(camView==='far')?'📷 Xa':'📷 Gần';
   if(saveIt){ try{ localStorage.setItem('ganhpho-camview', camView); }catch(e){} saveCamPitch(); }
 }
 $('btn-cam').addEventListener('click', function(){ setCamView(camView==='far'?'near':'far', true); sfx('pop'); });
@@ -2904,6 +2982,11 @@ function updateHintText(){
   if(povMode) hm.textContent = IS_TOUCH ? '👆 Nửa trái để đi · Nửa phải để nhìn quanh' : 'WASD / ←↑↓→ để đi · Kéo chuột để nhìn quanh · ⚡: tới khách đói';
   else hm.textContent = IS_TOUCH ? '👆 Nửa trái để đi · Chạm đất để tới đó · Nửa phải để xoay camera' : 'WASD / ←↑↓→ để đi · Chuột phải + kéo: xoay camera · ⚡: tới khách đói';
 }
+/* portrait: the hint line shows for 5s after entering the game, then fades out for good
+   (it comes back for another 5s when the help panel is closed). On desktop it stays.
+   updateHUD owns the opacity: visible only inside the window and while no banner is up. */
+var hintUntil=0;
+function showHintTemp(){ hintUntil=performance.now()+5000; }
 function updatePovGanh(){
   if(!povGanhImgEl) return;
   var sway=playerState.moving ? Math.sin(playerState.walkPhase)*0.03 : 0; // ±1.7° carried sway, same as the 3D gánh
@@ -2920,7 +3003,7 @@ function applyPovMode(saveIt){
 $('btn-pov').addEventListener('click', function(){ povMode=!povMode; applyPovMode(true); sfx('pop'); });
 $('btn-play').addEventListener('click', function(){
   ac(); sfx('perfect');
-  closeOv('ov-start'); G.started=true;
+  closeOv('ov-start'); G.started=true; showHintTemp();
   toast(LANG==='vi'?'Về nhà nấu phở nào! 🍳':'Go home and cook some phở! 🍳', 3500);
 });
 $('btn-shout').addEventListener('click', doShout);
@@ -2948,6 +3031,21 @@ $('ov-map').addEventListener('click', function(e){
   if(t) teleportToPlace(t.getAttribute('data-place'));
 });
 $('btn-goals').addEventListener('click', function(){ renderGoals(); openOv('ov-goals'); });
+/* ---------------- ☰ menu (portrait): one button opens a panel with the side-menu actions ---------------- */
+$('btn-menu').addEventListener('click', function(e){
+  e.stopPropagation();
+  $('menu-panel').classList.toggle('hidden'); sfx('pop');
+});
+$('menu-panel').addEventListener('click', function(e){ if(e.target===$('menu-panel')) closeMenu(); });
+document.querySelectorAll('#menu-panel [data-menu]').forEach(function(b){
+  b.addEventListener('click', function(){
+    closeMenu();
+    var map={shop:'btn-upgrades',gear:'btn-gear',book:'btn-book',kitchen:'btn-kitchen',outfits:'btn-outfits',help:'btn-help',map:'btn-map',goals:'btn-goals',camview:'btn-cam'};
+    var orig=$(map[b.getAttribute('data-menu')]);
+    if(orig) orig.click();
+    sfx('pop');
+  });
+});
 $('btn-sound').addEventListener('click', function(){
   G.muted=!G.muted; $('btn-sound').textContent=G.muted?'🔇':'🔊'; save();
 });
@@ -2982,6 +3080,7 @@ function loop(now){
       var v=new THREE.Vector3(c.x, 2.2, c.z).project(camera);
       if(v.z<1){ c.bubble.style.left=((v.x*0.5+0.5)*window.innerWidth)+'px'; c.bubble.style.top=((-v.y*0.5+0.5)*window.innerHeight)+'px'; }
     });
+    layoutBubbles();
   }
   updateWorld(dt);
   updateHearts(dt);
