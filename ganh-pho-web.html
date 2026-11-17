@@ -60,6 +60,11 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#35a7ff;font
 #cam-btns{position:absolute;right:12px;bottom:180px;display:grid;grid-template-areas:". up ." "left down right";gap:6px;z-index:6}
 #cam-btns .cam-btn{grid-area:var(--a);min-width:48px;min-height:48px;width:48px;height:48px;padding:0;font-size:20px;border-radius:14px;background:rgba(15,18,28,.88);color:#fff;border-color:rgba(255,255,255,.3);touch-action:none}
 #btn-cam-up{--a:up}#btn-cam-left{--a:left}#btn-cam-down{--a:down}#btn-cam-right{--a:right}
+/* first-person gánh overlay: the carried pole across the bottom of the view (POV only) */
+#pov-ganh{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(320px,72vw);pointer-events:none;z-index:4;display:none}
+#pov-ganh img{width:100%;display:block;will-change:transform}
+body.pov #pov-ganh{display:block}
+body.pov #btn-cam{display:none} /* near/far distance means nothing in first person */
 #hint-move{position:absolute;top:72px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:#fff;text-shadow:0 2px 2px rgba(0,0,0,.5);white-space:nowrap}
 /* customer bubbles (projected) */
 #bubble-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none}
@@ -74,7 +79,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#35a7ff;font
 /* ---------- overlays ---------- */
 .overlay{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:rgba(20,30,60,.45);padding:12px}
 /* hide the bottom HUD cluster while any overlay is open (it would show through under the serve card) */
-body.ov-open #btn-serve,body.ov-open #shout-wrap,body.ov-open #hint-move,body.ov-open #joystick,body.ov-open #ctx-btns,body.ov-open #cam-btns{display:none !important}
+body.ov-open #btn-serve,body.ov-open #shout-wrap,body.ov-open #hint-move,body.ov-open #joystick,body.ov-open #ctx-btns,body.ov-open #cam-btns,body.ov-open #pov-ganh{display:none !important}
 .ov-card{width:min(560px,96vw);max-height:92vh;overflow-y:auto;padding:18px 20px}
 .ov-card h2{margin:0 0 6px;font-size:26px;text-align:center}
 .ov-card h3{margin:10px 0 4px;font-size:18px}
@@ -204,6 +209,7 @@ input[type=text]{font-family:inherit;font-size:17px;font-weight:700;border:3px s
   #ctx-btns{bottom:136px;right:12px;left:auto;transform:none}
   #ctx-btns .btn{font-size:15px;padding:10px 14px;min-height:44px}
   #cam-btns{bottom:196px}
+  #pov-ganh{width:min(220px,56vw);bottom:0} /* portrait: pole along the very bottom edge, pot + basket peek out beside the PHỞƠƠ! button */
   #shout-wrap{bottom:16px;right:12px;left:auto;transform:none;align-items:flex-end}
   #btn-shout{font-size:19px;min-width:170px;padding:12px 20px}
   #btn-serve{min-width:200px;font-size:19px;padding:11px 18px}
@@ -240,6 +246,7 @@ input[type=text]{font-family:inherit;font-size:17px;font-weight:700;border:3px s
     <div id="top-right">
       <button class="btn small" id="btn-sound">🔊</button>
       <button class="btn small" id="btn-lang">VI | EN</button>
+      <button class="btn small" id="btn-pov" title="Đổi góc nhìn / Switch view">👁️ POV</button>
     </div>
     <div id="special-card" class="hidden"><span class="nm" id="special-name"></span><div id="special-sub"></div></div>
     <div id="side-left">
@@ -261,6 +268,7 @@ input[type=text]{font-family:inherit;font-size:17px;font-weight:700;border:3px s
       <button class="btn cam-btn" id="btn-cam-down" aria-label="Cúi camera">▼</button>
       <button class="btn cam-btn" id="btn-cam-right" aria-label="Xoay camera phải">▶</button>
     </div>
+    <div id="pov-ganh"><img id="pov-ganh-img" src="sprites/ganh-prop.png" alt="Gánh phở"></div>
     <div id="banner" class="hidden"></div>
     <div id="ctx-btns">
       <button class="btn green hidden" id="btn-cook">🍳 NẤU PHỞ</button>
@@ -503,7 +511,7 @@ var I18N = {
     codeOk:'Nhận code thành công!',
     codeBad:'Code sai hoặc đã nhận rồi.',
     codeUsed:'Code này đã nhận rồi.',
-    helpBody:'<b>1. NẤU:</b> Về nhà, bấm <b>BẾP</b>, nấu 6 bước (xay → vắt → nấu → nêm → nước lèo → topping). Nấu hoàn hảo được 32 tô, nấu đạt được 24 tô. Tủ lạnh chứa tối đa 50 tô.<br><b>2. MUA:</b> Ra <b>tiệm tạp hóa</b>, mua nguyên liệu theo lần nấu: 1 lần = 32 tô (25.700đ), 5 lần = 160 tô (128.000đ). Nguyên liệu về tủ ở nhà.<br><b>3. LẤY TÔ:</b> Đứng ở nhà, tô tự đầy vào gánh (tối đa 16, nâng cấp lên 24).<br><b>4. BÁN:</b> Gánh phở đi khắp phố. Khách đói hiện bong bóng gọi món — lại gần, bấm <b>PHỤC VỤ</b>, rót đúng vùng vàng để được hoàn hảo. Hóa đơn có hệ số <b>BOOST ×2.07–×5.02</b>!<br><b>5. KHÁCH QUEN:</b> Mở <b>SỔ</b> để xem khách quen — ai cũng có tính cách riêng. Sinh nhật thì tặng ảnh!<br><b>6. NÂNG CẤP:</b> Mở <b>CỬA HÀNG</b> mua gánh lớn, đi nhanh, xe đạp + thùng sau.<br><b>Di chuyển:</b> WASD / mũi tên trên máy tính, kéo cần gạt bên trái trên điện thoại. Bấm <b>PHỞƠƠ!</b> để gọi khách đói gần nhất.<br><b>7. TÌM KHÁCH:</b> Mũi tên vàng trên đầu bé cá luôn chỉ tới khách đói gần nhất. Bấm <b>⚡ DỊCH CHUYỂN</b> để tới ngay cạnh khách (hồi 10 giây). Giữ <b>chuột phải + kéo</b> để xoay camera 360°, kéo lên/xuống để ngước/cúi camera (trên điện thoại: kéo một ngón trên màn hình). Mở <b>BẢN ĐỒ</b> để dịch chuyển tới các chỗ trên phố (chung hồi chiêu 10 giây).',
+    helpBody:'<b>1. NẤU:</b> Về nhà, bấm <b>BẾP</b>, nấu 6 bước (xay → vắt → nấu → nêm → nước lèo → topping). Nấu hoàn hảo được 32 tô, nấu đạt được 24 tô. Tủ lạnh chứa tối đa 50 tô.<br><b>2. MUA:</b> Ra <b>tiệm tạp hóa</b>, mua nguyên liệu theo lần nấu: 1 lần = 32 tô (25.700đ), 5 lần = 160 tô (128.000đ). Nguyên liệu về tủ ở nhà.<br><b>3. LẤY TÔ:</b> Đứng ở nhà, tô tự đầy vào gánh (tối đa 16, nâng cấp lên 24).<br><b>4. BÁN:</b> Gánh phở đi khắp phố. Khách đói hiện bong bóng gọi món — lại gần, bấm <b>PHỤC VỤ</b>, rót đúng vùng vàng để được hoàn hảo. Hóa đơn có hệ số <b>BOOST ×2.07–×5.02</b>!<br><b>5. KHÁCH QUEN:</b> Mở <b>SỔ</b> để xem khách quen — ai cũng có tính cách riêng. Sinh nhật thì tặng ảnh!<br><b>6. NÂNG CẤP:</b> Mở <b>CỬA HÀNG</b> mua gánh lớn, đi nhanh, xe đạp + thùng sau.<br><b>Di chuyển:</b> WASD / mũi tên trên máy tính, kéo cần gạt bên trái trên điện thoại. Bấm <b>PHỞƠƠ!</b> để gọi khách đói gần nhất.<br><b>7. TÌM KHÁCH:</b> Mũi tên vàng ở trên cùng luôn chỉ tới khách đói gần nhất. Bấm <b>⚡ DỊCH CHUYỂN</b> để tới ngay cạnh khách (hồi 10 giây). Mở <b>BẢN ĐỒ</b> để dịch chuyển tới các chỗ trên phố (chung hồi chiêu 10 giây).<br><b>👁️ GÓC NHÌN:</b> Mặc định là góc nhìn thứ nhất — bạn nhìn từ mắt bé cá, gánh phở ở cuối màn hình. Kéo chuột (hoặc kéo một ngón trên nửa phải màn hình) để nhìn quanh, kéo lên để ngước lên, kéo xuống để cúi xuống. Bấm nút <b>👁️ POV / 3RD</b> ở góc phải trên cùng để đổi sang góc nhìn thứ ba (thấy cả bé cá) và ngược lại.',
   },
   en:{
     tagline:'Sell phở on a Vietnamese street — cook, carry, earn!',
@@ -535,7 +543,7 @@ var I18N = {
     codeOk:'Code redeemed!',
     codeBad:'Wrong code.',
     codeUsed:'Code already redeemed.',
-    helpBody:'<b>1. COOK:</b> Go home, tap <b>KITCHEN</b>, cook in 6 steps (grind → squeeze → boil → season → broth → topping). A perfect cook makes 32 bowls, a good one 24. Fridge holds max 50 bowls.<br><b>2. BUY:</b> At the <b>grocery</b>, buy ingredients per cook: 1 cook = 32 bowls (25,700đ), 5 cooks = 160 bowls (128,000đ). Ingredients go to the pantry at home.<br><b>3. LOAD:</b> Stand at home — bowls fill your pole by themselves (max 16, upgrade to 24).<br><b>4. SELL:</b> Carry your phở around town. Hungry customers show an order bubble — walk up, tap <b>SERVE</b>, pour in the gold zone for a perfect pour. Receipts have a <b>BOOST ×2.07–×5.02</b> multiplier!<br><b>5. REGULARS:</b> Open the <b>BOOK</b> to see your regulars — everyone has their own personality. Birthdays earn a photo!<br><b>6. UPGRADES:</b> Open the <b>SHOP</b> for a bigger pole, faster walking, and a bike + sidecar.<br><b>Move:</b> WASD / arrows on PC. On phone: put your left thumb down anywhere on the left half — the joystick appears right there — or just tap the ground to walk there. Tap <b>PHỞƠƠ!</b> to call the nearest hungry group.<br><b>7. FIND CUSTOMERS:</b> The yellow arrow above bé cá always points to the nearest hungry customer. Tap <b>⚡ TELEPORT</b> to jump right next to them (10s cooldown). Hold <b>right mouse + drag</b> to orbit the camera 360°, drag up/down to tilt the camera up/down (on phone: drag one finger on the right half, drag with two fingers, or hold the ◀ ▶ ▲ ▼ buttons). Open the <b>MAP</b> to teleport to places around town (shares the 10s cooldown).',
+    helpBody:'<b>1. COOK:</b> Go home, tap <b>KITCHEN</b>, cook in 6 steps (grind → squeeze → boil → season → broth → topping). A perfect cook makes 32 bowls, a good one 24. Fridge holds max 50 bowls.<br><b>2. BUY:</b> At the <b>grocery</b>, buy ingredients per cook: 1 cook = 32 bowls (25,700đ), 5 cooks = 160 bowls (128,000đ). Ingredients go to the pantry at home.<br><b>3. LOAD:</b> Stand at home — bowls fill your pole by themselves (max 16, upgrade to 24).<br><b>4. SELL:</b> Carry your phở around town. Hungry customers show an order bubble — walk up, tap <b>SERVE</b>, pour in the gold zone for a perfect pour. Receipts have a <b>BOOST ×2.07–×5.02</b> multiplier!<br><b>5. REGULARS:</b> Open the <b>BOOK</b> to see your regulars — everyone has their own personality. Birthdays earn a photo!<br><b>6. UPGRADES:</b> Open the <b>SHOP</b> for a bigger pole, faster walking, and a bike + sidecar.<br><b>Move:</b> WASD / arrows on PC. On phone: put your left thumb down anywhere on the left half — the joystick appears right there. Tap <b>PHỞƠƠ!</b> to call the nearest hungry group.<br><b>7. FIND CUSTOMERS:</b> The yellow arrow at the top always points to the nearest hungry customer. Tap <b>⚡ TELEPORT</b> to jump right next to them (10s cooldown). Open the <b>MAP</b> to teleport to places around town (shares the 10s cooldown).<br><b>👁️ VIEW:</b> First-person is the default — you see through bé cá’s eyes, with the phở pole at the bottom of the screen. Drag the mouse (or one finger on the right half of the screen) to look around, drag up to look up, drag down to look down. Tap the <b>👁️ POV / 3RD</b> button at the top right to switch to third-person view (see bé cá) and back.',
   }
 };
 function t(k){ var d=I18N[LANG]||I18N.vi; return d[k]!=null?d[k]:I18N.vi[k]; }
@@ -662,7 +670,7 @@ var camTipShown=(function(){ try{ return localStorage.getItem('ganhpho-camtip')=
 function camDragHint(touch){
   if(camTipShown) return; camTipShown=true;
   try{ localStorage.setItem('ganhpho-camtip','1'); }catch(e){}
-  toast(touch ? '👆 Kéo một ngón trên màn hình để xoay camera — kéo lên/xuống để ngước/cúi camera' : '🖱️ Giữ chuột phải + kéo để xoay camera — kéo lên/xuống để ngước/cúi camera', 4000);
+  toast(povMode ? (touch ? '👆 Kéo một ngón trên nửa phải để nhìn quanh — kéo lên để ngước lên, kéo xuống để cúi xuống' : '🖱️ Kéo chuột để nhìn quanh — kéo lên để ngước lên, kéo xuống để cúi xuống') : (touch ? '👆 Kéo một ngón trên màn hình để xoay camera — kéo lên/xuống để ngước/cúi camera' : '🖱️ Giữ chuột phải + kéo để xoay camera — kéo lên/xuống để ngước/cúi camera'), 4000);
 }
 var CAM_VIEWS={ near:{dist:8,pitch:0.5}, far:{dist:12,pitch:0.68} }; // 1:1 metres: near 8 m / far 12 m from a 1.6 m person
 var CAM_PITCH_MIN=0.15, CAM_PITCH_MAX=1.2; // user pitch range: low sweep -> near top-down
@@ -670,6 +678,14 @@ var camView=(function(){ try{ var v=localStorage.getItem('ganhpho-camview'); if(
 var camPitch=(function(){ try{ var v=parseFloat(localStorage.getItem('ganhpho-campitch')); if(isFinite(v)) return clamp(v,CAM_PITCH_MIN,CAM_PITCH_MAX); }catch(e){} return CAM_VIEWS[camView].pitch; })();
 function saveCamPitch(){ try{ localStorage.setItem('ganhpho-campitch', String(camPitch)); }catch(e){} }
 var camDist=CAM_VIEWS[camView].dist, camDistCur=camDist, camPitchCur=camPitch;
+/* ---- first-person (POV) mode: default on load; the camera is bé cá's eyes ---- */
+var IS_TOUCH=(('ontouchstart' in window)||navigator.maxTouchPoints>0);
+var POV_EYE=1.55; // eye height of a 1.6 m person, metres
+var POV_PITCH_MIN=-0.5, POV_PITCH_MAX=0.6; // look down / up, radians
+var povMode=(function(){ try{ var v=localStorage.getItem('ganhpho-pov'); if(v==='0'||v==='1') return v==='1'; }catch(e){} return true; })();
+var povPitch=(function(){ try{ var v=parseFloat(localStorage.getItem('ganhpho-povpitch')); if(isFinite(v)) return clamp(v,POV_PITCH_MIN,POV_PITCH_MAX); }catch(e){} return 0; })();
+function savePovPitch(){ try{ localStorage.setItem('ganhpho-povpitch', String(povPitch)); }catch(e){} }
+var povGanhEl=null, povGanhImgEl=null;
 var camAnchor=null; // smoothed follow point (camera lerps to the player, no snapping/jitter)
 var keys = {};
 var joyVec = {x:0,y:0};
@@ -1545,7 +1561,7 @@ function updatePlayer(dt){
   if(keys['KeyD']||keys['ArrowRight']) rgt+=1;
   fwd+=-joyVec.y; rgt+=joyVec.x; // joystick up = forward on screen
   // tap-to-move (mobile): walk toward the tapped ground point, unless another input is active
-  if(tapTarget && !keys['KeyW'] && !keys['KeyA'] && !keys['KeyS'] && !keys['KeyD'] && !keys['ArrowUp'] && !keys['ArrowDown'] && !keys['ArrowLeft'] && !keys['ArrowRight'] && Math.sqrt(joyVec.x*joyVec.x+joyVec.y*joyVec.y)<0.05){
+  if(tapTarget && !povMode && !keys['KeyW'] && !keys['KeyA'] && !keys['KeyS'] && !keys['KeyD'] && !keys['ArrowUp'] && !keys['ArrowDown'] && !keys['ArrowLeft'] && !keys['ArrowRight'] && Math.sqrt(joyVec.x*joyVec.x+joyVec.y*joyVec.y)<0.05){
     var tdx=tapTarget.x-playerState.x, tdz=tapTarget.z-playerState.z;
     var tdl=Math.sqrt(tdx*tdx+tdz*tdz);
     if(tdl<0.4){ tapTarget=null; }
@@ -1561,7 +1577,10 @@ function updatePlayer(dt){
   if(keys['KeyE'] && !nearCustomer) camYaw-=1.9*dt;
   // on-screen camera buttons (◀ ▶ ▲ ▼, hold to turn)
   if(camBtnYaw) camYaw+=camBtnYaw*1.9*dt;
-  if(camBtnPitch) camPitch=clamp(camPitch+camBtnPitch*1.2*dt, CAM_PITCH_MIN, CAM_PITCH_MAX);
+  if(camBtnPitch){
+    if(povMode) povPitch=clamp(povPitch+camBtnPitch*1.2*dt, POV_PITCH_MIN, POV_PITCH_MAX);
+    else camPitch=clamp(camPitch+camBtnPitch*1.2*dt, CAM_PITCH_MIN, CAM_PITCH_MAX);
+  }
   // CAMERA-RELATIVE movement (the turn bug): input used to be world-fixed
   // (W = -Z always) while the camera sat behind bé cá and swung 180° when
   // she turned — so after every U-turn, "up" on screen moved her DOWN-screen
@@ -1594,6 +1613,16 @@ function updatePlayer(dt){
   // collision: pull in / rise when a building blocks the view
   // window.__freezeCam (test hook) locks the camera in place
   if(!window.__freezeCam){
+  if(povMode){
+    // FIRST-PERSON: the camera IS bé cá's eyes (1.55 m). Yaw = look
+    // direction, povPitch = look up/down; the walk bob rides on the camera.
+    var lookX=playerState.x + Math.sin(camYaw)*Math.cos(povPitch);
+    var lookY=POV_EYE + bobY + Math.sin(povPitch);
+    var lookZ=playerState.z + Math.cos(camYaw)*Math.cos(povPitch);
+    camera.position.set(playerState.x, POV_EYE + bobY, playerState.z);
+    camera.lookAt(lookX, lookY, lookZ);
+    updatePovGanh();
+  } else {
   if(!camAnchor) camAnchor={x:playerState.x, z:playerState.z};
   camAnchor.x+=(playerState.x-camAnchor.x)*Math.min(1,dt*6);
   camAnchor.z+=(playerState.z-camAnchor.z)*Math.min(1,dt*6);
@@ -1627,6 +1656,7 @@ function updatePlayer(dt){
   }
   camera.position.set(cx,cy,cz);
   camera.lookAt(camAnchor.x, 1.05, camAnchor.z); // chest height of a 1.6 m person
+  } // end 3rd-person camera
   } // end __freezeCam guard
   // zones
   nearZone=null;
@@ -1830,7 +1860,7 @@ function updateHUD(){
   });
   if(best){
     var ang=Math.atan2(best.x-playerState.x, best.z-playerState.z);
-    var rel=ang-playerState.heading;
+    var rel=ang-(povMode?camYaw:playerState.heading); // POV: arrow is relative to where you look
     var arrow = Math.abs(rel)<0.5?'⬆':(rel>0?'➡':'⬅');
     if(Math.abs(rel)>2.6) arrow='⬇';
     $('tracker-text').innerHTML='😋 '+t('hungry')+': '+Math.round(bd)+'m <span class="arrow">'+arrow+'</span>';
@@ -1847,7 +1877,7 @@ function updateHUD(){
   $('dayline').textContent=t('day')+' '+G.day+' · '+phase;
   // 3D guide arrow above bé cá → nearest hungry group (hidden when <8m away)
   if(guideArrow){
-    var showArrow = !!(best && bd>=8 && G.started && !anyOverlayOpen());
+    var showArrow = !!(best && bd>=8 && G.started && !anyOverlayOpen() && !povMode);
     guideArrow.visible=showArrow;
     if(showArrow){
       guideArrow.position.set(playerState.x, 2.6+Math.sin(clock3.t*3)*0.12, playerState.z);
@@ -1960,7 +1990,7 @@ function updateWorld(dt){
 /* ---------------- overlays helper ---------------- */
 var openOverlayId=null;
 function openOv(id){ tapTarget=null; $(id).classList.remove('hidden'); openOverlayId=id; document.body.classList.add('ov-open'); }
-function closeOv(id){ $(id).classList.add('hidden'); if(openOverlayId===id) openOverlayId=null; if(!openOverlayId) document.body.classList.remove('ov-open'); if(id==='ov-pour'){ window.__freezeCam=false; if(player) player.visible=true; } }
+function closeOv(id){ $(id).classList.add('hidden'); if(openOverlayId===id) openOverlayId=null; if(!openOverlayId) document.body.classList.remove('ov-open'); if(id==='ov-pour'){ window.__freezeCam=false; if(player) player.visible=!povMode; } }
 function closeAllOv(){ document.querySelectorAll('.overlay').forEach(function(o){ o.classList.add('hidden'); }); openOverlayId=null; document.body.classList.remove('ov-open'); }
 document.addEventListener('click', function(e){
   var c=e.target.closest('[data-close]');
@@ -2573,6 +2603,7 @@ function rebuildPlayer(){
   if(player){ scene.remove(player); }
   player=buildBeca();
   player.position.set(playerState.x,0,playerState.z);
+  player.visible=!povMode; // stay hidden in first person
   scene.add(player);
 }
 /* ---------------- SUKI BOOK / MAP / GOALS ---------------- */
@@ -2651,6 +2682,7 @@ function teleportArrive(x, z, label){
   var p=collide(x+dx/d*3, z+dz/d*3);
   playerState.x=p.x; playerState.z=p.z;
   playerState.heading=Math.atan2(x-p.x, z-p.z);
+  if(povMode) camYaw=playerState.heading; // first person: look at the destination after teleporting
   if(camAnchor){ camAnchor.x=p.x; camAnchor.z=p.z; } // snap camera, no long pan
   teleReadyAt=now+10;
   closeOv('ov-map');
@@ -2716,7 +2748,7 @@ window.addEventListener('keyup', function(e){
    - touch, left half, drag >14px  -> floating joystick appears at the thumb (140px base, 6px dead zone)
    - touch, right half, drag >14px -> camera orbit (0.008 rad/px, ~60% faster than before)
    - two fingers down              -> camera orbit on the midpoint of both fingers
-   - quick tap (<=14px, <350ms)    -> tap-to-move: bé cá walks to the tapped ground point
+   - quick tap (<=14px, <350ms)    -> tap-to-move (3rd-person only): bé cá walks to the tapped ground point
    - mouse right-drag               -> camera orbit as before (0.005 rad/px)
    A drag that starts on the joystick side never rotates the camera, and a drag that
    starts on the camera side never moves the player. */
@@ -2752,7 +2784,8 @@ function screenToGround(cx,cy){
   }
   function orbitBy(dx,dy,sens){
     camYaw-=dx*sens;
-    camPitch=clamp(camPitch-dy*sens, CAM_PITCH_MIN, CAM_PITCH_MAX);
+    if(povMode) povPitch=clamp(povPitch-dy*sens, POV_PITCH_MIN, POV_PITCH_MAX);
+    else camPitch=clamp(camPitch-dy*sens, CAM_PITCH_MIN, CAM_PITCH_MAX);
   }
   function avgPts(){
     var sx=0, sy=0, n=0;
@@ -2813,20 +2846,20 @@ function screenToGround(cx,cy){
     }
   });
   function endPointer(e){
-    if(mode==='mouse'){ mode=null; saveCamYaw(); saveCamPitch(); return; }
+    if(mode==='mouse'){ mode=null; saveCamYaw(); saveCamPitch(); savePovPitch(); return; }
     var p=pts.get(e.pointerId);
     if(!p) return;
     var dist=Math.sqrt((p.x-p.sx)*(p.x-p.sx)+(p.y-p.sy)*(p.y-p.sy));
     var dt=performance.now()-p.t0;
-    if(mode===null && dist<=COMMIT && dt<TAP_MS){
-      // quick tap on empty ground -> walk there
+    if(mode===null && dist<=COMMIT && dt<TAP_MS && !povMode){
+      // quick tap on empty ground -> walk there (3rd-person only; POV has no tap-to-move)
       var g=screenToGround(p.sx,p.sy);
       if(g) tapTarget=g;
     }
     pts.delete(e.pointerId);
     if(mode==='joy' && e.pointerId===joyId){ resetJoy(); joyId=null; }
-    else if(mode==='cam' && e.pointerId===camId){ camId=null; saveCamYaw(); saveCamPitch(); }
-    else if(mode==='cam2' && pts.size<2){ saveCamYaw(); saveCamPitch(); }
+    else if(mode==='cam' && e.pointerId===camId){ camId=null; saveCamYaw(); saveCamPitch(); savePovPitch(); }
+    else if(mode==='cam2' && pts.size<2){ saveCamYaw(); saveCamPitch(); savePovPitch(); }
     if(pts.size===0) mode=null;
   }
   area.addEventListener('pointerup', endPointer);
@@ -2839,11 +2872,14 @@ function screenToGround(cx,cy){
     b.addEventListener('pointerdown', function(e){
       e.preventDefault();
       if(yawDir){ camYaw+=yawDir*0.15; } // instant nudge so a tap still turns
-      if(pitchDir){ camPitch=clamp(camPitch+pitchDir*0.10, CAM_PITCH_MIN, CAM_PITCH_MAX); }
+      if(pitchDir){
+        if(povMode) povPitch=clamp(povPitch+pitchDir*0.10, POV_PITCH_MIN, POV_PITCH_MAX);
+        else camPitch=clamp(camPitch+pitchDir*0.10, CAM_PITCH_MIN, CAM_PITCH_MAX);
+      }
       if(yawDir) camBtnYaw=yawDir; else camBtnPitch=pitchDir;
       try{ b.setPointerCapture(e.pointerId); }catch(err){}
     });
-    function rel(){ camBtnYaw=0; camBtnPitch=0; saveCamYaw(); saveCamPitch(); }
+    function rel(){ camBtnYaw=0; camBtnPitch=0; saveCamYaw(); saveCamPitch(); savePovPitch(); }
     b.addEventListener('pointerup', rel);
     b.addEventListener('pointercancel', rel);
     b.addEventListener('pointerleave', rel);
@@ -2862,6 +2898,26 @@ function setCamView(v, saveIt){
   if(saveIt){ try{ localStorage.setItem('ganhpho-camview', camView); }catch(e){} saveCamPitch(); }
 }
 $('btn-cam').addEventListener('click', function(){ setCamView(camView==='far'?'near':'far', true); sfx('pop'); });
+/* ---------------- first-person (POV) toggle + HUD gánh ---------------- */
+function updateHintText(){
+  var hm=$('hint-move'); if(!hm) return;
+  if(povMode) hm.textContent = IS_TOUCH ? '👆 Nửa trái để đi · Nửa phải để nhìn quanh' : 'WASD / ←↑↓→ để đi · Kéo chuột để nhìn quanh · ⚡: tới khách đói';
+  else hm.textContent = IS_TOUCH ? '👆 Nửa trái để đi · Chạm đất để tới đó · Nửa phải để xoay camera' : 'WASD / ←↑↓→ để đi · Chuột phải + kéo: xoay camera · ⚡: tới khách đói';
+}
+function updatePovGanh(){
+  if(!povGanhImgEl) return;
+  var sway=playerState.moving ? Math.sin(playerState.walkPhase)*0.03 : 0; // ±1.7° carried sway, same as the 3D gánh
+  var bob=playerState.moving ? Math.abs(Math.sin(playerState.walkPhase))*4 : Math.sin(clock3.t*2)*1;
+  povGanhImgEl.style.transform='rotate('+sway.toFixed(3)+'rad) translateY('+(-bob).toFixed(1)+'px)';
+}
+function applyPovMode(saveIt){
+  document.body.classList.toggle('pov', povMode);
+  if(player) player.visible=!povMode;
+  $('btn-pov').textContent = povMode ? '👁️ POV' : '👁️ 3RD';
+  updateHintText();
+  if(saveIt){ try{ localStorage.setItem('ganhpho-pov', povMode?'1':'0'); }catch(e){} savePovPitch(); }
+}
+$('btn-pov').addEventListener('click', function(){ povMode=!povMode; applyPovMode(true); sfx('pop'); });
 $('btn-play').addEventListener('click', function(){
   ac(); sfx('perfect');
   closeOv('ov-start'); G.started=true;
@@ -2935,16 +2991,13 @@ function loop(now){
 /* ---------------- boot ---------------- */
 function boot(){
   load();
-  // touch hint (the desktop hint talks about WASD / right mouse — wrong on a phone)
-  if(('ontouchstart' in window) || navigator.maxTouchPoints>0){
-    var hm=$('hint-move');
-    if(hm) hm.textContent='👆 Nửa trái để đi · Chạm đất để tới đó · Nửa phải để xoay camera';
-  }
+  povGanhEl=$('pov-ganh'); povGanhImgEl=$('pov-ganh-img');
   LANG=G.lang||'vi';
   initScene();
   player=buildBeca();
   player.position.set(playerState.x,0,playerState.z);
   scene.add(player);
+  applyPovMode(false); // default POV: hide bé cá, show the HUD gánh, set the hint text
   applyLang();
   setCamView(camView, false); // label the 📷 button with the saved/default view
   var bShot=bowlSnapshot(); // real 3D bowl photo for the cook/shop/pour/receipt panels
@@ -2971,6 +3024,8 @@ function boot(){
     G:G, CFG:CFG, playerState:playerState,
     getHearts:function(){ return hearts.length; },
     getCam:function(){ return {x:camera.position.x, y:camera.position.y, z:camera.position.z, fov:camera.fov, dist:camDistCur, pitch:camPitchCur, yaw:camYaw, view:camView}; },
+    getPov:function(){ return {pov:povMode, pitch:povPitch, eye:POV_EYE, playerVisible:player?player.visible:null}; },
+    setPov:function(v){ povMode=!!v; applyPovMode(true); },
     getTapTarget:function(){ return tapTarget; },
     setCamDist:function(d){ camDist=d; camDistCur=d; },
     setView:function(h, cy){ playerState.heading=h; camYaw=cy; },
