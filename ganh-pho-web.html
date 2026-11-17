@@ -19,7 +19,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#35a7ff;font
 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 #222}
 .btn.green{background:#4ecb4e}.btn.orange{background:#ff9f2e}.btn.blue{background:#4fa8ff;color:#fff}.btn.red{background:#ff5d5d;color:#fff}.btn.grey{background:#ddd}
 .btn:disabled{opacity:.45;cursor:not-allowed}
-.btn.small{font-size:15px;padding:7px 12px}
+.btn.small{font-size:15px;padding:10px 14px}
 /* ---------- HUD ---------- */
 #hud{position:absolute;inset:0;pointer-events:none;z-index:5}
 #hud>*{pointer-events:none}
@@ -31,8 +31,8 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#35a7ff;font
 #clockbox .day{font-size:12px;color:#ccc}
 #moneybox{position:absolute;bottom:158px;left:18px;background:rgba(15,18,28,.88);color:#fff;border:3px solid rgba(255,255,255,.25);border-radius:999px;padding:6px 12px;font-weight:800;font-size:19px;box-shadow:0 4px 0 rgba(0,0,0,.35)}
 #moneybox .sub{font-size:12px;color:#ccc;font-weight:700}
-.plus-btn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;border:none;background:#2fbf5a;color:#fff;font-size:20px;font-weight:800;cursor:pointer;margin-left:6px;vertical-align:middle;box-shadow:0 2px 0 rgba(0,0,0,.4)}
-#chips{position:absolute;bottom:216px;left:18px;display:flex;flex-direction:column;gap:5px}
+.plus-btn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;border:none;background:#2fbf5a;color:#fff;font-size:22px;font-weight:800;cursor:pointer;margin-left:6px;vertical-align:middle;box-shadow:0 2px 0 rgba(0,0,0,.4)}
+#chips{position:absolute;bottom:240px;left:18px;display:flex;flex-direction:column;gap:5px}
 .chip{background:#ffe14d;border:2px solid #222;border-radius:20px;padding:2px 10px;font-weight:800;font-size:13px;width:max-content}
 #special-card{position:absolute;top:110px;left:10px;background:#fff;border:3px solid #e2543e;border-radius:12px;padding:6px 10px;font-weight:800;font-size:14px;box-shadow:0 4px 0 rgba(0,0,0,.2);max-width:190px}
 #special-card .nm{color:#e2543e}
@@ -40,7 +40,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#35a7ff;font
 #side-left .btn{width:104px;font-size:14px;padding:8px 4px;text-align:center;background:rgba(15,18,28,.88);color:#fff;border-color:rgba(255,255,255,.3)}
 #side-right{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px}
 #side-right .btn{width:86px;font-size:14px;padding:8px 4px;text-align:center;background:rgba(15,18,28,.88);color:#fff;border-color:rgba(255,255,255,.3)}
-#top-right{position:absolute;top:64px;right:10px;display:flex;gap:6px}
+#top-right{position:absolute;top:70px;right:10px;display:flex;gap:6px}
 #top-right .btn{font-size:14px;padding:6px 10px;background:rgba(15,18,28,.88);color:#fff;border-color:rgba(255,255,255,.3)}
 #shout-wrap{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px}
 #btn-shout{font-size:21px;padding:12px 26px;border-radius:999px;min-width:210px;background:linear-gradient(#ffb703,#ff8c1a);color:#5a3418;border:3px solid #222}
@@ -50,11 +50,16 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#35a7ff;font
 #btn-serve{font-size:22px;padding:13px 30px;border-radius:20px;min-width:230px}
 #ctx-btns{position:absolute;bottom:170px;left:50%;transform:translateX(-50%);display:flex;gap:10px}
 #banner{position:absolute;top:104px;left:50%;transform:translateX(-50%);background:#ff5d8f;color:#fff;border:3px solid #222;border-radius:14px;padding:8px 18px;font-weight:800;font-size:18px;box-shadow:0 4px 0 rgba(0,0,0,.25);text-align:center}
-#toasts{position:absolute;bottom:190px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px}
+#toasts{position:absolute;bottom:230px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px}
 .toast{background:rgba(34,34,34,.9);color:#fff;border-radius:12px;padding:7px 16px;font-weight:700;font-size:15px}
-/* joystick */
-#joy{position:absolute;bottom:24px;left:18px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.25);border:3px solid rgba(255,255,255,.6);pointer-events:auto;touch-action:none}
-#joy-knob{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.85);border:3px solid #222}
+/* joystick — visual only (pointer-events:none): the #c3d touch router drives it.
+   Floating: it appears where the left thumb lands, 140px base / 60px knob. */
+#joy{position:absolute;bottom:24px;left:18px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.25);border:3px solid rgba(255,255,255,.6);pointer-events:none;touch-action:none}
+#joy-knob{position:absolute;left:40px;top:40px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.85);border:3px solid #222}
+/* on-screen camera buttons (thumb-sized, hold to turn) */
+#cam-btns{position:absolute;right:12px;bottom:180px;display:grid;grid-template-areas:". up ." "left down right";gap:6px;z-index:6}
+#cam-btns .cam-btn{grid-area:var(--a);min-width:48px;min-height:48px;width:48px;height:48px;padding:0;font-size:20px;border-radius:14px;background:rgba(15,18,28,.88);color:#fff;border-color:rgba(255,255,255,.3);touch-action:none}
+#btn-cam-up{--a:up}#btn-cam-left{--a:left}#btn-cam-down{--a:down}#btn-cam-right{--a:right}
 #hint-move{position:absolute;top:72px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:#fff;text-shadow:0 2px 2px rgba(0,0,0,.5);white-space:nowrap}
 /* customer bubbles (projected) */
 #bubble-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none}
@@ -69,13 +74,13 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#35a7ff;font
 /* ---------- overlays ---------- */
 .overlay{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:rgba(20,30,60,.45);padding:12px}
 /* hide the bottom HUD cluster while any overlay is open (it would show through under the serve card) */
-body.ov-open #btn-serve,body.ov-open #shout-wrap,body.ov-open #hint-move,body.ov-open #joystick,body.ov-open #ctx-btns{display:none !important}
+body.ov-open #btn-serve,body.ov-open #shout-wrap,body.ov-open #hint-move,body.ov-open #joystick,body.ov-open #ctx-btns,body.ov-open #cam-btns{display:none !important}
 .ov-card{width:min(560px,96vw);max-height:92vh;overflow-y:auto;padding:18px 20px}
 .ov-card h2{margin:0 0 6px;font-size:26px;text-align:center}
 .ov-card h3{margin:10px 0 4px;font-size:18px}
 .ov-card p{margin:6px 0;font-size:16px;line-height:1.45}
 .ov-card .row{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
-.ov-card .close-x{position:absolute;top:10px;right:14px;font-size:26px;font-weight:800;cursor:pointer;background:none;border:none}
+.ov-card .close-x{position:absolute;top:10px;right:14px;font-size:26px;font-weight:800;cursor:pointer;background:none;border:none;min-width:44px;min-height:44px;padding:6px 10px;line-height:1}
 .ov-wrap{position:relative}
 .dots{display:flex;gap:6px;justify-content:center;margin:8px 0}
 .dot{width:26px;height:26px;border-radius:50%;border:3px solid #222;background:#ddd;font-weight:800;font-size:14px;line-height:20px;text-align:center}
@@ -182,14 +187,43 @@ input[type=text]{font-family:inherit;font-size:17px;font-weight:700;border:3px s
   .serve-order{width:100%}
   .serve-big{min-width:260px;font-size:20px !important}
   .sakto{display:none}
-  #side-left .btn{width:84px;font-size:12px;padding:7px 2px}
-  #side-right .btn{width:70px;font-size:12px}
-  #tracker{font-size:14px;min-width:170px;top:8px}
-  #moneybox{font-size:16px}
-  #btn-shout{font-size:18px;min-width:170px}
-  #clockbox{font-size:14px}
+  /* portrait HUD at 390px: top row fits, bottom cluster never overlaps */
+  #tracker{left:8px;right:106px;transform:none;min-width:0;font-size:13px;padding:4px 10px;white-space:nowrap;overflow:hidden;line-height:1.15}
+  #tracker .arrow{font-size:18px}
+  #tracker .obj{font-size:11px;white-space:nowrap}
+  #clockbox{top:8px;right:8px;font-size:14px;padding:5px 10px}
+  #clockbox .day{font-size:11px}
+  #top-right{top:70px;right:8px}
+  #top-right .btn{min-width:44px;min-height:44px;font-size:15px;padding:8px 10px}
+  #moneybox{bottom:170px;left:16px;font-size:16px;padding:5px 10px}
+  #moneybox .sub{font-size:11px}
+  #chips{bottom:248px;left:16px}
+  #side-left .btn{width:92px;font-size:12px;padding:11px 2px}
+  #side-right .btn{width:92px;font-size:12px;padding:11px 2px}
+  #side-left,#side-right{gap:6px}
+  #ctx-btns{bottom:136px;right:12px;left:auto;transform:none}
+  #ctx-btns .btn{font-size:15px;padding:10px 14px;min-height:44px}
+  #cam-btns{bottom:196px}
+  #shout-wrap{bottom:16px;right:12px;left:auto;transform:none;align-items:flex-end}
+  #btn-shout{font-size:19px;min-width:170px;padding:12px 20px}
+  #btn-serve{min-width:200px;font-size:19px;padding:11px 18px}
+  #toasts{bottom:320px}
+  #banner{top:155px;left:110px;right:8px;transform:none;max-width:none;font-size:16px;padding:7px 14px}
+  #hint-move{top:118px}
   .ov-card h2{font-size:22px}
   #hint-move{font-size:11px;max-width:94vw;white-space:normal;text-align:center}
+  .serve-tabs .tab{padding:12px 16px}
+}
+@media (max-height:500px) and (orientation:landscape){
+  /* short landscape (844x390): side menu becomes a 2x3 grid top-left, camera row bottom-right */
+  #side-left{top:8px;left:8px;transform:none;display:grid;grid-template-columns:repeat(3,88px);gap:4px}
+  #side-left .btn{width:88px;font-size:12px;padding:7px 2px}
+  #side-right .btn{width:92px;font-size:12px;padding:9px 2px}
+  #moneybox{bottom:170px}
+  #chips{bottom:256px}
+  #cam-btns{left:auto;right:12px;transform:none;bottom:16px;grid-template-areas:"left up down right";grid-template-columns:repeat(4,48px)}
+  #toasts{bottom:250px}
+  #hint-move{display:none}
 }
 </style>
 </head>
@@ -220,6 +254,12 @@ input[type=text]{font-family:inherit;font-size:17px;font-weight:700;border:3px s
       <button class="btn blue" id="btn-cam">📷 Xa</button>
       <button class="btn blue" data-i18n="map" id="btn-map">🗺️ BẢN ĐỒ</button>
       <button class="btn blue" data-i18n="goals" id="btn-goals">🎯 MỤC TIÊU</button>
+    </div>
+    <div id="cam-btns">
+      <button class="btn cam-btn" id="btn-cam-up" aria-label="Ngước camera">▲</button>
+      <button class="btn cam-btn" id="btn-cam-left" aria-label="Xoay camera trái">◀</button>
+      <button class="btn cam-btn" id="btn-cam-down" aria-label="Cúi camera">▼</button>
+      <button class="btn cam-btn" id="btn-cam-right" aria-label="Xoay camera phải">▶</button>
     </div>
     <div id="banner" class="hidden"></div>
     <div id="ctx-btns">
@@ -495,7 +535,7 @@ var I18N = {
     codeOk:'Code redeemed!',
     codeBad:'Wrong code.',
     codeUsed:'Code already redeemed.',
-    helpBody:'<b>1. COOK:</b> Go home, tap <b>KITCHEN</b>, cook in 6 steps (grind → squeeze → boil → season → broth → topping). A perfect cook makes 32 bowls, a good one 24. Fridge holds max 50 bowls.<br><b>2. BUY:</b> At the <b>grocery</b>, buy ingredients per cook: 1 cook = 32 bowls (25,700đ), 5 cooks = 160 bowls (128,000đ). Ingredients go to the pantry at home.<br><b>3. LOAD:</b> Stand at home — bowls fill your pole by themselves (max 16, upgrade to 24).<br><b>4. SELL:</b> Carry your phở around town. Hungry customers show an order bubble — walk up, tap <b>SERVE</b>, pour in the gold zone for a perfect pour. Receipts have a <b>BOOST ×2.07–×5.02</b> multiplier!<br><b>5. REGULARS:</b> Open the <b>BOOK</b> to see your regulars — everyone has their own personality. Birthdays earn a photo!<br><b>6. UPGRADES:</b> Open the <b>SHOP</b> for a bigger pole, faster walking, and a bike + sidecar.<br><b>Move:</b> WASD / arrows on PC, drag the left joystick on mobile. Tap <b>PHỞƠƠ!</b> to call the nearest hungry group.<br><b>7. FIND CUSTOMERS:</b> The yellow arrow above bé cá always points to the nearest hungry customer. Tap <b>⚡ TELEPORT</b> to jump right next to them (10s cooldown). Hold <b>right mouse + drag</b> to orbit the camera 360°, drag up/down to tilt the camera up/down (on phone: drag one finger on the screen). Open the <b>MAP</b> to teleport to places around town (shares the 10s cooldown).',
+    helpBody:'<b>1. COOK:</b> Go home, tap <b>KITCHEN</b>, cook in 6 steps (grind → squeeze → boil → season → broth → topping). A perfect cook makes 32 bowls, a good one 24. Fridge holds max 50 bowls.<br><b>2. BUY:</b> At the <b>grocery</b>, buy ingredients per cook: 1 cook = 32 bowls (25,700đ), 5 cooks = 160 bowls (128,000đ). Ingredients go to the pantry at home.<br><b>3. LOAD:</b> Stand at home — bowls fill your pole by themselves (max 16, upgrade to 24).<br><b>4. SELL:</b> Carry your phở around town. Hungry customers show an order bubble — walk up, tap <b>SERVE</b>, pour in the gold zone for a perfect pour. Receipts have a <b>BOOST ×2.07–×5.02</b> multiplier!<br><b>5. REGULARS:</b> Open the <b>BOOK</b> to see your regulars — everyone has their own personality. Birthdays earn a photo!<br><b>6. UPGRADES:</b> Open the <b>SHOP</b> for a bigger pole, faster walking, and a bike + sidecar.<br><b>Move:</b> WASD / arrows on PC. On phone: put your left thumb down anywhere on the left half — the joystick appears right there — or just tap the ground to walk there. Tap <b>PHỞƠƠ!</b> to call the nearest hungry group.<br><b>7. FIND CUSTOMERS:</b> The yellow arrow above bé cá always points to the nearest hungry customer. Tap <b>⚡ TELEPORT</b> to jump right next to them (10s cooldown). Hold <b>right mouse + drag</b> to orbit the camera 360°, drag up/down to tilt the camera up/down (on phone: drag one finger on the right half, drag with two fingers, or hold the ◀ ▶ ▲ ▼ buttons). Open the <b>MAP</b> to teleport to places around town (shares the 10s cooldown).',
   }
 };
 function t(k){ var d=I18N[LANG]||I18N.vi; return d[k]!=null?d[k]:I18N.vi[k]; }
@@ -1326,7 +1366,8 @@ function windowBox(w,h,d,x,y,z,parent){
 var SPRITE_DEFS={
   beca:{ front:'sprites/beca-walk-front.png', back:'sprites/beca-walk-back.png',
          runBack:'sprites/beca-run-back.png', still:'sprites/beca-still.png',
-         frames:12, runFrames:8, fps:15, height:1.6 },
+         frames:12, runFrames:8, fps:15, height:1.6,
+         ganh:'sprites/ganh-prop.png' }, /* hand-drawn gánh: bé cá carries it (2nd billboard, behind torso) */
   npc:{ front:'sprites/beca-walk-front.png', back:'sprites/beca-walk-back.png',
         runBack:'sprites/beca-run-back.png', still:'sprites/beca-still.png',
         frames:12, runFrames:8, fps:15, height:1.6 },
@@ -1363,8 +1404,23 @@ function makeSpriteChar(def){
   var mesh=new THREE.Mesh(geo, m);
   mesh.position.y=def.height/2;
   g.add(mesh);
+  /* optional gánh prop (bé cá only): second billboard, child of the character
+     plane so it inherits the billboard rotation + walk bob. Pole 0.95 m wide
+     on a 1.6 m character (≈1.85× shoulder width) so the pot + basket hang
+     clear of the torso; pole centre at shoulder height (frame y≈200),
+     plane centre +0.07 m above the character-plane centre, 0.05 m behind
+     the torso so the pole reads as resting on the shoulders. */
+  var ganhMesh=null, ganhTex=null;
+  if(def.ganh){
+    ganhTex=loadSheet(def.ganh, 1);
+    var gw=def.height*0.594, gh=gw*232/768;
+    ganhMesh=new THREE.Mesh(new THREE.PlaneGeometry(gw, gh),
+      new THREE.MeshBasicMaterial({map:ganhTex, transparent:false, alphaTest:0.08, side:THREE.DoubleSide}));
+    ganhMesh.position.set(0, 0.07, -0.05);
+    mesh.add(ganhMesh);
+  }
   addBlobShadow(g, def.height*0.7);
-  return {group:g, mesh:mesh, mat:m, def:def, texFront:texFront, texBack:texBack, texRun:texRun, dir:'front', frame:0, animT:0, frames:def.frames};
+  return {group:g, mesh:mesh, mat:m, def:def, texFront:texFront, texBack:texBack, texRun:texRun, dir:'front', frame:0, animT:0, frames:def.frames, ganh:ganhMesh, ganhTex:ganhTex};
 }
 /* swap the active sheet (front/back/run-back) — keeps repeat/offset per texture */
 function setSpriteSheet(ch, dir, running){
@@ -1390,9 +1446,11 @@ function spriteFace(ch, moving, running, ix, iz, dt){
     var fr=Math.floor(ch.animT)%ch.frames;
     if(fr!==ch.frame){ ch.frame=fr; ch.mat.map.offset.x=fr/ch.frames; }
     ch.mesh.position.y=ch.def.height/2 + Math.abs(Math.sin(ch.animT*Math.PI/ch.frames))*0.03;
+    if(ch.ganh) ch.ganh.rotation.z=Math.sin(ch.animT*Math.PI/ch.frames*2)*0.03; // ±1.7° carried sway
   } else {
     if(ch.frame!==0 || ch.dir!=='front'){ ch.frame=0; ch.dir='front'; ch.mat.map.offset.x=0; if(ch.mat.map!==ch.texFront){ ch.mat.map=ch.texFront; ch.mat.needsUpdate=true; } }
     ch.mesh.position.y=ch.def.height/2;
+    if(ch.ganh) ch.ganh.rotation.z=0;
   }
 }
 /* ---------------- bé cá (hand-drawn sprite; outfit = tint on the stand-in) ---------------- */
@@ -1400,7 +1458,8 @@ function buildBeca(){
   var tint=(G.outfit==='pink')?0xffb3d1 : (G.outfit==='white')?0xdceeff : 0xffffff;
   var ch=makeSpriteChar({front:SPRITE_DEFS.beca.front, back:SPRITE_DEFS.beca.back,
     runBack:SPRITE_DEFS.beca.runBack, frames:SPRITE_DEFS.beca.frames,
-    runFrames:SPRITE_DEFS.beca.runFrames, height:SPRITE_DEFS.beca.height, tint:tint});
+    runFrames:SPRITE_DEFS.beca.runFrames, height:SPRITE_DEFS.beca.height, tint:tint,
+    ganh:SPRITE_DEFS.beca.ganh});
   playerParts=ch;
   return ch.group;
 }
@@ -1485,9 +1544,24 @@ function updatePlayer(dt){
   if(keys['KeyA']||keys['ArrowLeft']) rgt-=1;
   if(keys['KeyD']||keys['ArrowRight']) rgt+=1;
   fwd+=-joyVec.y; rgt+=joyVec.x; // joystick up = forward on screen
+  // tap-to-move (mobile): walk toward the tapped ground point, unless another input is active
+  if(tapTarget && !keys['KeyW'] && !keys['KeyA'] && !keys['KeyS'] && !keys['KeyD'] && !keys['ArrowUp'] && !keys['ArrowDown'] && !keys['ArrowLeft'] && !keys['ArrowRight'] && Math.sqrt(joyVec.x*joyVec.x+joyVec.y*joyVec.y)<0.05){
+    var tdx=tapTarget.x-playerState.x, tdz=tapTarget.z-playerState.z;
+    var tdl=Math.sqrt(tdx*tdx+tdz*tdz);
+    if(tdl<0.4){ tapTarget=null; }
+    else {
+      var tfx=Math.sin(camYaw), tfz=Math.cos(camYaw), trx=-Math.cos(camYaw), trz=Math.sin(camYaw);
+      var ndx=tdx/tdl, ndz=tdz/tdl;
+      var tsp=Math.min(1, tdl/1.5); // ease off as she arrives
+      fwd=(ndx*tfx+ndz*tfz)*tsp; rgt=(ndx*trx+ndz*trz)*tsp;
+    }
+  }
   // Q/E rotate the camera (E also serves when a customer is near — serve wins)
   if(keys['KeyQ']) camYaw+=1.9*dt;
   if(keys['KeyE'] && !nearCustomer) camYaw-=1.9*dt;
+  // on-screen camera buttons (◀ ▶ ▲ ▼, hold to turn)
+  if(camBtnYaw) camYaw+=camBtnYaw*1.9*dt;
+  if(camBtnPitch) camPitch=clamp(camPitch+camBtnPitch*1.2*dt, CAM_PITCH_MIN, CAM_PITCH_MAX);
   // CAMERA-RELATIVE movement (the turn bug): input used to be world-fixed
   // (W = -Z always) while the camera sat behind bé cá and swung 180° when
   // she turned — so after every U-turn, "up" on screen moved her DOWN-screen
@@ -1705,6 +1779,9 @@ function updateCustomers(dt){
     }
   });
   $('btn-serve').classList.toggle('hidden', !nearCustomer);
+  // while a customer is right next to you, shouting is pointless — hide PHỞƠƠ!
+  // so the bottom cluster stays compact and never covers the joystick / money box
+  $('btn-shout').classList.toggle('hidden', !!nearCustomer);
   if(nearCustomer){
     var o=nearCustomer.order;
     $('btn-serve').textContent=t('serve')+' · '+G.carried+'/'+G.capacity; // TAHO: "Phục vụ · 15/16"
@@ -1882,7 +1959,7 @@ function updateWorld(dt){
 }
 /* ---------------- overlays helper ---------------- */
 var openOverlayId=null;
-function openOv(id){ $(id).classList.remove('hidden'); openOverlayId=id; document.body.classList.add('ov-open'); }
+function openOv(id){ tapTarget=null; $(id).classList.remove('hidden'); openOverlayId=id; document.body.classList.add('ov-open'); }
 function closeOv(id){ $(id).classList.add('hidden'); if(openOverlayId===id) openOverlayId=null; if(!openOverlayId) document.body.classList.remove('ov-open'); if(id==='ov-pour'){ window.__freezeCam=false; if(player) player.visible=true; } }
 function closeAllOv(){ document.querySelectorAll('.overlay').forEach(function(o){ o.classList.add('hidden'); }); openOverlayId=null; document.body.classList.remove('ov-open'); }
 document.addEventListener('click', function(e){
@@ -2566,6 +2643,7 @@ function renderMap(){
 /* shared teleport arrival: land ~3 m from (x,z), facing it, 10s cooldown */
 function teleportArrive(x, z, label){
   if(!G.started) return;
+  tapTarget=null; // teleport cancels any tap-to-move walk
   var now=Date.now()/1000;
   if(now<teleReadyAt){ toast('⚡ '+(LANG==='vi'?'Đang hồi: ':'Cooling down: ')+Math.ceil(teleReadyAt-now)+'s'); sfx('error'); return; }
   var dx=playerState.x-x, dz=playerState.z-z, d=Math.sqrt(dx*dx+dz*dz);
@@ -2633,46 +2711,147 @@ window.addEventListener('keyup', function(e){
   if(e.code==='KeyQ'||e.code==='KeyE') saveCamYaw();
   if(e.code==='KeyE' && openOverlayId==='ov-pour' && POUR_STEPS[pour.step] && POUR_STEPS[pour.step].id==='broth') pourRelease();
 });
-// virtual joystick
+/* ---------------- mobile touch router: floating joystick + camera orbit + tap-to-move ----------------
+   One unified pointer router on #c3d (the joystick is visual-only now, pointer-events:none):
+   - touch, left half, drag >14px  -> floating joystick appears at the thumb (140px base, 6px dead zone)
+   - touch, right half, drag >14px -> camera orbit (0.008 rad/px, ~60% faster than before)
+   - two fingers down              -> camera orbit on the midpoint of both fingers
+   - quick tap (<=14px, <350ms)    -> tap-to-move: bé cá walks to the tapped ground point
+   - mouse right-drag               -> camera orbit as before (0.005 rad/px)
+   A drag that starts on the joystick side never rotates the camera, and a drag that
+   starts on the camera side never moves the player. */
+var tapTarget=null; // {x,z} world point bé cá walks to (tap-to-move)
+var camBtnYaw=0, camBtnPitch=0; // held on-screen camera buttons (◀ ▶ ▲ ▼)
+function screenToGround(cx,cy){
+  if(!camera || !window.THREE) return null;
+  var nx=(cx/window.innerWidth)*2-1, ny=-(cy/window.innerHeight)*2+1;
+  var rc=new THREE.Raycaster(); rc.setFromCamera({x:nx,y:ny}, camera);
+  var o=rc.ray.origin, d=rc.ray.direction;
+  if(Math.abs(d.y)<1e-4 || d.y>=0) return null; // ray must point down at the street
+  var t=-o.y/d.y; if(t<0 || t>120) return null;
+  return {x:o.x+d.x*t, z:o.z+d.z*t};
+}
 (function(){
-  var joy=$('joy'), knob=$('joy-knob'), active=false, id=null;
-  function setKnob(dx,dy){
-    var len=Math.sqrt(dx*dx+dy*dy), max=38;
-    if(len>max){ dx*=max/len; dy*=max/len; }
-    knob.style.left=(35+dx)+'px'; knob.style.top=(35+dy)+'px';
-    joyVec.x=dx/max; joyVec.y=dy/max;
+  var joy=$('joy'), knob=$('joy-knob'), area=$('c3d');
+  var JOY_R=70, DEAD=6, MAXD=44, COMMIT=14, TAP_MS=350, TOUCH_SENS=0.008, MOUSE_SENS=0.005;
+  var pts=new Map(); // pointerId -> {x,y,sx,sy,t0}
+  var mode=null; // null | 'joy' | 'cam' | 'cam2' | 'mouse'
+  var joyId=null, camId=null, lastX=0, lastY=0, lastAvgX=0, lastAvgY=0;
+  function showJoy(cx,cy){
+    joy.style.left=(cx-JOY_R)+'px'; joy.style.top=(cy-JOY_R)+'px'; joy.style.bottom='auto';
   }
-  joy.addEventListener('pointerdown', function(e){ active=true; id=e.pointerId; joy.setPointerCapture(id); setKnob(e.clientX-joy.getBoundingClientRect().left-60, e.clientY-joy.getBoundingClientRect().top-60); });
-  joy.addEventListener('pointermove', function(e){ if(!active||e.pointerId!==id) return; var r=joy.getBoundingClientRect(); setKnob(e.clientX-r.left-60, e.clientY-r.top-60); });
-  function end(e){ if(e.pointerId!==id) return; active=false; joyVec.x=0; joyVec.y=0; knob.style.left='35px'; knob.style.top='35px'; }
-  joy.addEventListener('pointerup', end); joy.addEventListener('pointercancel', end);
-})();
-/* ---------------- 360° camera orbit: right-drag (PC) / one-finger drag on empty screen (mobile) ---------------- */
-(function(){
-  var area=$('c3d'), dragging=false, lastX=0, lastY=0, touchMode=false, moved=0;
+  function setKnob(dx,dy){
+    var len=Math.sqrt(dx*dx+dy*dy);
+    if(len<DEAD){ joyVec.x=0; joyVec.y=0; knob.style.left='40px'; knob.style.top='40px'; return; }
+    if(len>MAXD){ dx*=MAXD/len; dy*=MAXD/len; }
+    knob.style.left=(40+dx)+'px'; knob.style.top=(40+dy)+'px';
+    joyVec.x=dx/MAXD; joyVec.y=dy/MAXD;
+  }
+  function resetJoy(){
+    joyVec.x=0; joyVec.y=0; knob.style.left='40px'; knob.style.top='40px';
+  }
+  function orbitBy(dx,dy,sens){
+    camYaw-=dx*sens;
+    camPitch=clamp(camPitch-dy*sens, CAM_PITCH_MIN, CAM_PITCH_MAX);
+  }
+  function avgPts(){
+    var sx=0, sy=0, n=0;
+    pts.forEach(function(p){ sx+=p.x; sy+=p.y; n++; });
+    return {x:sx/n, y:sy/n};
+  }
   area.addEventListener('contextmenu', function(e){ e.preventDefault(); });
   area.addEventListener('pointerdown', function(e){
     if(!G.started || anyOverlayOpen()) return;
-    if(e.pointerType==='mouse' && e.button!==2) return; // right button only on PC
-    if(e.pointerType==='touch' && !e.isPrimary) return;
-    dragging=true; touchMode=(e.pointerType==='touch'); lastX=e.clientX; lastY=e.clientY; moved=0;
+    if(e.pointerType==='mouse'){
+      if(e.button!==2) return; // right button only on PC
+      mode='mouse'; lastX=e.clientX; lastY=e.clientY;
+      try{ area.setPointerCapture(e.pointerId); }catch(err){}
+      camDragHint(false);
+      e.preventDefault();
+      return;
+    }
+    // touch
+    pts.set(e.pointerId, {x:e.clientX, y:e.clientY, sx:e.clientX, sy:e.clientY, t0:performance.now()});
+    if(pts.size===2 && (mode===null || mode==='joy' || mode==='cam')){
+      // second finger -> two-finger camera orbit (cancels any joystick)
+      if(mode==='joy') resetJoy();
+      mode='cam2';
+      var a=avgPts(); lastAvgX=a.x; lastAvgY=a.y;
+      camDragHint(true);
+    }
     try{ area.setPointerCapture(e.pointerId); }catch(err){}
-    camDragHint(touchMode);
     e.preventDefault();
   });
   area.addEventListener('pointermove', function(e){
-    if(!dragging) return;
-    var dx=e.clientX-lastX, dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
-    moved+=Math.abs(dx)+Math.abs(dy);
-    camYaw-=dx*0.005; // drag right = view pans right (Roblox-style)
-    camPitch=clamp(camPitch-dy*0.005, CAM_PITCH_MIN, CAM_PITCH_MAX); // drag up = camera rises (look down more), drag down = low sweep
+    if(mode==='mouse'){
+      var mdx=e.clientX-lastX, mdy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
+      orbitBy(mdx,mdy,MOUSE_SENS);
+      return;
+    }
+    var p=pts.get(e.pointerId);
+    if(!p) return;
+    p.x=e.clientX; p.y=e.clientY;
+    var dist=Math.sqrt((p.x-p.sx)*(p.x-p.sx)+(p.y-p.sy)*(p.y-p.sy));
+    if(mode===null && dist>COMMIT){
+      if(p.sx<window.innerWidth*0.5){
+        mode='joy'; joyId=e.pointerId; showJoy(p.sx,p.sy);
+      } else {
+        mode='cam'; camId=e.pointerId; lastX=p.x; lastY=p.y;
+        camDragHint(true);
+      }
+    }
+    if(mode==='joy' && e.pointerId===joyId){
+      setKnob(p.x-p.sx, p.y-p.sy);
+      tapTarget=null; // joystick takes over from tap-to-move
+    } else if(mode==='cam' && e.pointerId===camId){
+      var cdx=p.x-lastX, cdy=p.y-lastY; lastX=p.x; lastY=p.y;
+      orbitBy(cdx,cdy,TOUCH_SENS);
+    } else if(mode==='cam2'){
+      var av=avgPts();
+      orbitBy(av.x-lastAvgX, av.y-lastAvgY, TOUCH_SENS);
+      lastAvgX=av.x; lastAvgY=av.y;
+    }
   });
-  function endDrag(){
-    if(!dragging) return; dragging=false;
-    if(moved>4){ saveCamYaw(); saveCamPitch(); }
+  function endPointer(e){
+    if(mode==='mouse'){ mode=null; saveCamYaw(); saveCamPitch(); return; }
+    var p=pts.get(e.pointerId);
+    if(!p) return;
+    var dist=Math.sqrt((p.x-p.sx)*(p.x-p.sx)+(p.y-p.sy)*(p.y-p.sy));
+    var dt=performance.now()-p.t0;
+    if(mode===null && dist<=COMMIT && dt<TAP_MS){
+      // quick tap on empty ground -> walk there
+      var g=screenToGround(p.sx,p.sy);
+      if(g) tapTarget=g;
+    }
+    pts.delete(e.pointerId);
+    if(mode==='joy' && e.pointerId===joyId){ resetJoy(); joyId=null; }
+    else if(mode==='cam' && e.pointerId===camId){ camId=null; saveCamYaw(); saveCamPitch(); }
+    else if(mode==='cam2' && pts.size<2){ saveCamYaw(); saveCamPitch(); }
+    if(pts.size===0) mode=null;
   }
-  area.addEventListener('pointerup', endDrag);
-  area.addEventListener('pointercancel', endDrag);
+  area.addEventListener('pointerup', endPointer);
+  area.addEventListener('pointercancel', endPointer);
+})();
+/* ---------------- on-screen camera buttons (◀ ▶ ▲ ▼, hold to turn) ---------------- */
+(function(){
+  function bind(id, yawDir, pitchDir){
+    var b=$(id); if(!b) return;
+    b.addEventListener('pointerdown', function(e){
+      e.preventDefault();
+      if(yawDir){ camYaw+=yawDir*0.15; } // instant nudge so a tap still turns
+      if(pitchDir){ camPitch=clamp(camPitch+pitchDir*0.10, CAM_PITCH_MIN, CAM_PITCH_MAX); }
+      if(yawDir) camBtnYaw=yawDir; else camBtnPitch=pitchDir;
+      try{ b.setPointerCapture(e.pointerId); }catch(err){}
+    });
+    function rel(){ camBtnYaw=0; camBtnPitch=0; saveCamYaw(); saveCamPitch(); }
+    b.addEventListener('pointerup', rel);
+    b.addEventListener('pointercancel', rel);
+    b.addEventListener('pointerleave', rel);
+  }
+  bind('btn-cam-left', 1, 0);   // ◀ turn view left (same as Q)
+  bind('btn-cam-right', -1, 0); // ▶ turn view right (same as E)
+  bind('btn-cam-up', 0, 1);     // ▲ camera rises (look down more)
+  bind('btn-cam-down', 0, -1);  // ▼ low sweep
 })();
 /* ---------------- buttons ---------------- */
 /* ---------------- camera view toggle (📷 Gần / 📷 Xa, remembered) ---------------- */
@@ -2756,6 +2935,11 @@ function loop(now){
 /* ---------------- boot ---------------- */
 function boot(){
   load();
+  // touch hint (the desktop hint talks about WASD / right mouse — wrong on a phone)
+  if(('ontouchstart' in window) || navigator.maxTouchPoints>0){
+    var hm=$('hint-move');
+    if(hm) hm.textContent='👆 Nửa trái để đi · Chạm đất để tới đó · Nửa phải để xoay camera';
+  }
   LANG=G.lang||'vi';
   initScene();
   player=buildBeca();
@@ -2787,6 +2971,7 @@ function boot(){
     G:G, CFG:CFG, playerState:playerState,
     getHearts:function(){ return hearts.length; },
     getCam:function(){ return {x:camera.position.x, y:camera.position.y, z:camera.position.z, fov:camera.fov, dist:camDistCur, pitch:camPitchCur, yaw:camYaw, view:camView}; },
+    getTapTarget:function(){ return tapTarget; },
     setCamDist:function(d){ camDist=d; camDistCur=d; },
     setView:function(h, cy){ playerState.heading=h; camYaw=cy; },
     snapView:function(x,z,h,cy){
@@ -2807,6 +2992,7 @@ function boot(){
     cookStepDone:cookStepDone, setPitch:function(p){ camPitch=clamp(p,CAM_PITCH_MIN,CAM_PITCH_MAX); },
     getPitch:function(){ return camPitch; },
     getSprite:function(){ var m=playerParts&&playerParts.mesh?playerParts.mesh.material:null; if(!m) return null; var im=m.map.image; return {off:m.map.offset.x, texOK:!!(im&&im.complete&&im.naturalWidth>0), texW:im?im.naturalWidth:0, dir:playerParts.dir, frame:playerParts.frame}; },
+    getGanh:function(){ var g=playerParts&&playerParts.ganh?playerParts.ganh:null; if(!g) return null; var im=g.material.map.image; return {texOK:!!(im&&im.complete&&im.naturalWidth>0), texW:im?im.naturalWidth:0, w:g.geometry.parameters.width, h:g.geometry.parameters.height, y:g.position.y, z:g.position.z, sway:g.rotation.z}; },
     getNPCSprite:function(){ var c=G.customers[0]; if(!c||!c.mesh||!c.mesh.userData.sprite) return null; var sp=c.mesh.userData.sprite; var im=sp.mesh.material.map.image; return {off:sp.mesh.material.map.offset.x, texOK:!!(im&&im.complete&&im.naturalWidth>0), dir:sp.dir}; },
     getGuide:function(){ return guideArrow?{visible:guideArrow.visible, rotY:guideArrow.rotation.y}:null; },
     spawnCustomer:spawnCustomer, finishCook:finishCook, startCookStep:startCookStep,
