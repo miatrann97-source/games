@@ -139,6 +139,7 @@ input[type=text]{font-family:inherit;font-size:17px;font-weight:700;border:3px s
       <button class="btn grey" data-i18n="help" id="btn-help">❓ TRỢ GIÚP</button>
     </div>
     <div id="side-right">
+      <button class="btn blue" id="btn-cam">📷 Xa</button>
       <button class="btn blue" data-i18n="map" id="btn-map">🗺️ BẢN ĐỒ</button>
       <button class="btn blue" data-i18n="goals" id="btn-goals">🎯 MỤC TIÊU</button>
     </div>
@@ -484,7 +485,11 @@ function sfx(name){
 var renderer, scene, camera, hemi, sun, clock3 = { t:0 };
 var player=null, playerParts={}, gahnGroup=null;
 var world = { colliders:[], lamps:[], truck:null, clouds:[], spots:[] };
-var camYaw = Math.PI, camPitch = 0.46, camDist = 9, camDistCur = 9;
+var camYaw=Math.PI; // FIXED north-up: camera always stays south of bé cá looking north — it never swings when she turns, so the world stays put on screen
+var CAM_VIEWS={ near:{dist:11,pitch:0.62}, far:{dist:16,pitch:0.85} }; // near ~35° / far ~49° top-down
+var camView=(function(){ try{ var v=localStorage.getItem('ganhpho-camview'); if(v==='near'||v==='far') return v; }catch(e){} return (window.innerWidth<window.innerHeight)?'far':'near'; })();
+var camPitch=CAM_VIEWS[camView].pitch, camDist=CAM_VIEWS[camView].dist, camDistCur=camDist, camPitchCur=camPitch;
+var camAnchor=null; // smoothed follow point (camera lerps to the player, no snapping/jitter)
 var keys = {};
 var joyVec = {x:0,y:0};
 var PLAYER_SPEED_BASE = 7;
@@ -560,6 +565,13 @@ function lamp(x,z){
   world.lamps.push({bulb:bulb, head:head});
   addCollider(x,z,0.25,0.25);
 }
+function applyCamFov(){
+  // keep the horizontal view wide enough on narrow portrait phones:
+  // at FOV 55 the horizontal FOV on a 390px-wide phone was only ~27° — she could barely see the street ahead
+  var a=window.innerWidth/window.innerHeight;
+  camera.fov = a<0.8 ? 75 : 60;
+  camera.aspect=a; camera.updateProjectionMatrix();
+}
 function initScene(){
   renderer=new THREE.WebGLRenderer({antialias:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
@@ -569,6 +581,7 @@ function initScene(){
   scene.background=new THREE.Color(0x79b5e8);
   scene.fog=new THREE.Fog(0x79b5e8, 60, 140);
   camera=new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 300);
+  applyCamFov(); // portrait phones get a wider lens (see below)
   hemi=new THREE.HemisphereLight(0xcfe8ff, 0x8a7a5a, 0.95); scene.add(hemi);
   sun=new THREE.DirectionalLight(0xfff2cc, 1.1); sun.position.set(30,50,20); scene.add(sun);
 
@@ -670,7 +683,7 @@ function initScene(){
     {x:44,z:2,zone:'vendors'},{x:-30,z:-12,zone:'grocery'},{x:8,z:6,zone:'street'}
   ];
   window.addEventListener('resize', function(){
-    camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix();
+    applyCamFov();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 }
@@ -793,12 +806,20 @@ function playerSpeed(){
   return s;
 }
 function updatePlayer(dt){
-  var ix=0, iz=0;
-  if(keys['KeyW']||keys['ArrowUp']) iz-=1;
-  if(keys['KeyS']||keys['ArrowDown']) iz+=1;
-  if(keys['KeyA']||keys['ArrowLeft']) ix-=1;
-  if(keys['KeyD']||keys['ArrowRight']) ix+=1;
-  ix+=joyVec.x; iz+=joyVec.y;
+  var fwd=0, rgt=0;
+  if(keys['KeyW']||keys['ArrowUp']) fwd+=1;
+  if(keys['KeyS']||keys['ArrowDown']) fwd-=1;
+  if(keys['KeyA']||keys['ArrowLeft']) rgt-=1;
+  if(keys['KeyD']||keys['ArrowRight']) rgt+=1;
+  fwd+=-joyVec.y; rgt+=joyVec.x; // joystick up = forward on screen
+  // CAMERA-RELATIVE movement (the turn bug): input used to be world-fixed
+  // (W = -Z always) while the camera sat behind bé cá and swung 180° when
+  // she turned — so after every U-turn, "up" on screen moved her DOWN-screen
+  // and it felt like she couldn't turn back. Now screen-up is always the
+  // camera forward, so controls never flip when she turns around.
+  var fx=Math.sin(camYaw), fz=Math.cos(camYaw);   // camera forward (x,z)
+  var rx=-Math.cos(camYaw), rz=Math.sin(camYaw);  // camera right (x,z)
+  var ix=fx*fwd+rx*rgt, iz=fz*fwd+rz*rgt;
   var len=Math.sqrt(ix*ix+iz*iz);
   playerState.moving=len>0.15;
   if(playerState.moving){
@@ -825,13 +846,15 @@ function updatePlayer(dt){
     s.material.opacity=0.7*(1-((clock3.t*0.5+i*0.33)%1));
     var sc=0.7+((clock3.t*0.5+i*0.33)%1)*0.8; s.scale.set(sc,sc,sc);
   });
-  // camera follow (+ collision: pull in / rise when a building blocks the view)
+  // camera follow: FIXED north-up yaw (no more swinging when bé cá turns),
+  // smoothed anchor so the camera glides instead of snapping, and
+  // collision: pull in / rise when a building blocks the view
   // window.__freezeCam (test hook) locks the camera in place
   if(!window.__freezeCam){
-  var targetYaw=playerState.heading;
-  var dy=targetYaw-camYaw;
-  while(dy>Math.PI) dy-=Math.PI*2; while(dy<-Math.PI) dy+=Math.PI*2;
-  camYaw+=dy*Math.min(1,dt*2.5);
+  if(!camAnchor) camAnchor={x:playerState.x, z:playerState.z};
+  camAnchor.x+=(playerState.x-camAnchor.x)*Math.min(1,dt*6);
+  camAnchor.z+=(playerState.z-camAnchor.z)*Math.min(1,dt*6);
+  camPitchCur+=(camPitch-camPitchCur)*Math.min(1,dt*4);
   function camBlocked(cx,cz){
     for(var i=0;i<world.colliders.length;i++){
       var c=world.colliders[i];
@@ -840,20 +863,20 @@ function updatePlayer(dt){
     return false;
   }
   var wantDist=camDist, tries=0;
-  var tx=playerState.x - Math.sin(camYaw)*wantDist*Math.cos(camPitch);
-  var tz=playerState.z - Math.cos(camYaw)*wantDist*Math.cos(camPitch);
+  var tx=camAnchor.x - Math.sin(camYaw)*wantDist*Math.cos(camPitchCur);
+  var tz=camAnchor.z - Math.cos(camYaw)*wantDist*Math.cos(camPitchCur);
   while(camBlocked(tx,tz) && wantDist>3.5 && tries<20){
     wantDist-=0.5; tries++;
-    tx=playerState.x - Math.sin(camYaw)*wantDist*Math.cos(camPitch);
-    tz=playerState.z - Math.cos(camYaw)*wantDist*Math.cos(camPitch);
+    tx=camAnchor.x - Math.sin(camYaw)*wantDist*Math.cos(camPitchCur);
+    tz=camAnchor.z - Math.cos(camYaw)*wantDist*Math.cos(camPitchCur);
   }
   camDistCur += (wantDist-camDistCur)*Math.min(1,dt*8);
-  var cx=playerState.x - Math.sin(camYaw)*camDistCur*Math.cos(camPitch);
-  var cz=playerState.z - Math.cos(camYaw)*camDistCur*Math.cos(camPitch);
-  var cy=camDistCur*Math.sin(camPitch)+2.2;
+  var cx=camAnchor.x - Math.sin(camYaw)*camDistCur*Math.cos(camPitchCur);
+  var cz=camAnchor.z - Math.cos(camYaw)*camDistCur*Math.cos(camPitchCur);
+  var cy=camDistCur*Math.sin(camPitchCur)+2.2;
   if(camBlocked(cx,cz)) cy=Math.max(cy, 8.5);
   camera.position.set(cx,cy,cz);
-  camera.lookAt(playerState.x, 1.6, playerState.z);
+  camera.lookAt(camAnchor.x, 1.6, camAnchor.z);
   } // end __freezeCam guard
   // zones
   nearZone=null;
@@ -1582,6 +1605,14 @@ window.addEventListener('keyup', function(e){ keys[e.code]=false; });
   joy.addEventListener('pointerup', end); joy.addEventListener('pointercancel', end);
 })();
 /* ---------------- buttons ---------------- */
+/* ---------------- camera view toggle (📷 Gần / 📷 Xa, remembered) ---------------- */
+function setCamView(v, saveIt){
+  camView=(v==='near')?'near':'far';
+  camDist=CAM_VIEWS[camView].dist; camPitch=CAM_VIEWS[camView].pitch;
+  $('btn-cam').textContent=(camView==='far')?'📷 Xa':'📷 Gần';
+  if(saveIt){ try{ localStorage.setItem('ganhpho-camview', camView); }catch(e){} }
+}
+$('btn-cam').addEventListener('click', function(){ setCamView(camView==='far'?'near':'far', true); sfx('pop'); });
 $('btn-play').addEventListener('click', function(){
   ac(); sfx('perfect');
   closeOv('ov-start'); G.started=true;
@@ -1654,6 +1685,7 @@ function boot(){
   player.position.set(playerState.x,0,playerState.z);
   scene.add(player);
   applyLang();
+  setCamView(camView, false); // label the 📷 button with the saved/default view
   $('btn-sound').textContent=G.muted?'🔇':'🔊';
   updateHUD();
   spawnCustomer(false); spawnCustomer(false);
@@ -1674,6 +1706,7 @@ function boot(){
   // test API (used by automated checks)
   window.__test={
     G:G, CFG:CFG, playerState:playerState,
+    getCam:function(){ return {x:camera.position.x, y:camera.position.y, z:camera.position.z, fov:camera.fov, dist:camDistCur, pitch:camPitchCur, yaw:camYaw, view:camView}; },
     setView:function(h, cy){ playerState.heading=h; camYaw=cy; },
     snapView:function(x,z,h,cy){
       playerState.x=x; playerState.z=z; playerState.heading=h; camYaw=cy;
